@@ -1,0 +1,225 @@
+/*
+ * Site override: docs.google.com (Google Docs / Google Sheets / Google Slides)
+ *
+ * Google's suite apps have a toolbar that supports native dark mode via
+ * prefers-color-scheme, but the document/spreadsheet chrome around the canvas
+ * rendering area remains bright white. The canvas itself renders cell contents
+ * and cannot be styled via CSS — only the surrounding UI elements are targeted.
+ */
+
+@layer darkmode.overrides {
+  /* ── Overall page shell ─────────────────────────────────────────────────── */
+  html[data-darkmode] body,
+  html[data-darkmode] #docs-chrome,
+  html[data-darkmode] .docs-gm-container {
+    background-color: oklch(0.15 0.01 260) !important;
+    color: oklch(0.93 0.01 260) !important;
+  }
+
+  /* ── Header / Menu bar ──────────────────────────────────────────────────── */
+  html[data-darkmode] .docs-menubar,
+  html[data-darkmode] .docs-titlebar,
+  html[data-darkmode] .docs-header-container,
+  html[data-darkmode] .docs-material-header,
+  html[data-darkmode] #docs-chrome .material-header {
+    background-color: oklch(0.20 0.01 260) !important;
+    color: oklch(0.93 0.01 260) !important;
+    border-bottom-color: oklch(0.30 0.01 260) !important;
+  }
+
+  html[data-darkmode] .docs-menubar-item,
+  html[data-darkmode] .menu-button,
+  html[data-darkmode] .docs-icon-img-container {
+    color: oklch(0.93 0.01 260) !important;
+  }
+
+  html[data-darkmode] .docs-menubar-item:hover,
+  html[data-darkmode] .menu-button:hover {
+    background-color: oklch(0.28 0.01 260) !important;
+  }
+
+  /* ── Toolbar (formatting bar below menu) ────────────────────────────────── */
+  html[data-darkmode] .docs-toolbar,
+  html[data-darkmode] .docs-toolbar-wrapper,
+  html[data-darkmode] .goog-toolbar,
+  html[data-darkmode] #docs-toolbar {
+    background-color: oklch(0.20 0.01 260) !important;
+    border-bottom-color: oklch(0.30 0.01 260) !important;
+  }
+
+  html[data-darkmode] .goog-toolbar-button,
+  html[data-darkmode] .docs-toolbar-button {
+    color: oklch(0.93 0.01 260) !important;
+  }
+
+  html[data-darkmode] .goog-toolbar-button:hover,
+  html[data-darkmode] .docs-toolbar-button:hover {
+    background-color: oklch(0.28 0.01 260) !important;
+  }
+
+  html[data-darkmode] .goog-toolbar-separator {
+    border-color: oklch(0.30 0.01 260) !important;
+  }
+
+  /* ── Formula bar (Sheets) ───────────────────────────────────────────────── */
+  html[data-darkmode] .waffle-name-box,
+  html[data-darkmode] .cell-input,
+  html[data-darkmode] #t-formula-bar-input,
+  html[data-darkmode] .formula-bar-input,
+  html[data-darkmode] .docs-formula-bar {
+    background-color: oklch(0.20 0.01 260) !important;
+    color: oklch(0.93 0.01 260) !important;
+    border-color: oklch(0.30 0.01 260) !important;
+  }
+
+  html[data-darkmode] .waffle-name-box-separator {
+    border-color: oklch(0.30 0.01 260) !important;
+  }
+
+  /* ── Spreadsheet surrounding area (Sheets) ──────────────────────────────── */
+  html[data-darkmode] .waffle-scrollbar-corner,
+  html[data-darkmode] .waffle-horizontal-scrollbar-container,
+  html[data-darkmode] .waffle-vertical-scrollbar-container,
+  html[data-darkmode] .grid-container,
+  html[data-darkmode] #waffle-grid-container {
+    background-color: oklch(0.18 0.01 260) !important;
+  }
+
+  /* Row/column header strip outside the canvas */
+  html[data-darkmode] .waffle-frozen-column-header-container,
+  html[data-darkmode] .waffle-frozen-row-header-container,
+  html[data-darkmode] .column-header-container,
+  html[data-darkmode] .row-header-container {
+    background-color: oklch(0.22 0.01 260) !important;
+    border-color: oklch(0.30 0.01 260) !important;
+  }
+
+  /* ── Sheet tabs (bottom tab strip, Sheets) ──────────────────────────────── */
+  html[data-darkmode] .docs-sheet-tab-container,
+  html[data-darkmode] .docs-footer,
+  html[data-darkmode] #sheet-menu-container,
+  html[data-darkmode] .tab-strip {
+    background-color: oklch(0.18 0.01 260) !important;
+    border-top-color: oklch(0.30 0.01 260) !important;
+  }
+
+  html[data-darkmode] .docs-sheet-tab,
+  html[data-darkmode] .goog-inline-block.docs-sheet-tab {
+    background-color: oklch(0.22 0.01 260) !important;
+    color: oklch(0.93 0.01 260) !important;
+    border-color: oklch(0.30 0.01 260) !important;
+  }
+
+  html[data-darkmode] .docs-sheet-tab.docs-sheet-active-tab,
+  html[data-darkmode] .docs-sheet-tab[aria-selected="true"] {
+    background-color: oklch(0.15 0.01 260) !important;
+    color: oklch(0.93 0.01 260) !important;
+  }
+
+  html[data-darkmode] .docs-sheet-tab:hover {
+    background-color: oklch(0.28 0.01 260) !important;
+  }
+
+  /* ── Context menus / dropdown menus ─────────────────────────────────────── */
+  html[data-darkmode] .goog-menu,
+  html[data-darkmode] .docs-gm,
+  html[data-darkmode] .goog-menu-content {
+    background-color: oklch(0.20 0.01 260) !important;
+    border-color: oklch(0.30 0.01 260) !important;
+    box-shadow: 0 2px 8px oklch(0.05 0.01 260 / 0.6) !important;
+  }
+
+  html[data-darkmode] .goog-menuitem,
+  html[data-darkmode] .docs-gm-menuitem {
+    color: oklch(0.93 0.01 260) !important;
+  }
+
+  html[data-darkmode] .goog-menuitem:hover,
+  html[data-darkmode] .goog-menuitem-highlight,
+  html[data-darkmode] .docs-gm-menuitem:hover {
+    background-color: oklch(0.28 0.01 260) !important;
+    color: oklch(0.98 0.01 260) !important;
+  }
+
+  html[data-darkmode] .goog-menuitem-disabled,
+  html[data-darkmode] .goog-menuitem[aria-disabled="true"] {
+    color: oklch(0.45 0.01 260) !important;
+  }
+
+  html[data-darkmode] .goog-menuseparator,
+  html[data-darkmode] .docs-gm-menuseparator {
+    border-color: oklch(0.30 0.01 260) !important;
+  }
+
+  html[data-darkmode] .goog-menuitem-accel {
+    color: oklch(0.65 0.01 260) !important;
+  }
+
+  /* ── Sidebar panels ─────────────────────────────────────────────────────── */
+  html[data-darkmode] .docs-sidebar,
+  html[data-darkmode] .sidebar,
+  html[data-darkmode] [id*="sidebar"],
+  html[data-darkmode] .research-pane,
+  html[data-darkmode] .explorer-pane {
+    background-color: oklch(0.20 0.01 260) !important;
+    color: oklch(0.93 0.01 260) !important;
+    border-left-color: oklch(0.30 0.01 260) !important;
+  }
+
+  html[data-darkmode] .sidebar h1,
+  html[data-darkmode] .sidebar h2,
+  html[data-darkmode] .sidebar h3,
+  html[data-darkmode] .docs-sidebar h1,
+  html[data-darkmode] .docs-sidebar h2,
+  html[data-darkmode] .docs-sidebar h3 {
+    color: oklch(0.93 0.01 260) !important;
+  }
+
+  /* ── Dialogs / modals ───────────────────────────────────────────────────── */
+  html[data-darkmode] .docs-dialog,
+  html[data-darkmode] .goog-dialog,
+  html[data-darkmode] .modal-dialog {
+    background-color: oklch(0.20 0.01 260) !important;
+    color: oklch(0.93 0.01 260) !important;
+    border-color: oklch(0.30 0.01 260) !important;
+  }
+
+  html[data-darkmode] .docs-dialog-title,
+  html[data-darkmode] .goog-dialog-title {
+    background-color: oklch(0.22 0.01 260) !important;
+    color: oklch(0.93 0.01 260) !important;
+    border-bottom-color: oklch(0.30 0.01 260) !important;
+  }
+
+  html[data-darkmode] .docs-dialog-content,
+  html[data-darkmode] .goog-dialog-content {
+    background-color: oklch(0.20 0.01 260) !important;
+    color: oklch(0.93 0.01 260) !important;
+  }
+
+  /* ── Inputs, selects, text areas ────────────────────────────────────────── */
+  html[data-darkmode] #docs-chrome input:not([type="checkbox"]):not([type="radio"]),
+  html[data-darkmode] #docs-chrome select,
+  html[data-darkmode] #docs-chrome textarea {
+    background-color: oklch(0.18 0.01 260) !important;
+    color: oklch(0.93 0.01 260) !important;
+    border-color: oklch(0.35 0.01 260) !important;
+  }
+
+  /* ── Tooltips ───────────────────────────────────────────────────────────── */
+  html[data-darkmode] .docs-bubble,
+  html[data-darkmode] .docs-tooltip,
+  html[data-darkmode] .goog-tooltip {
+    background-color: oklch(0.25 0.01 260) !important;
+    color: oklch(0.93 0.01 260) !important;
+    border-color: oklch(0.35 0.01 260) !important;
+  }
+
+  /* ── Preserved: canvas, images, videos ─────────────────────────────────── */
+  /* The spreadsheet grid is rendered on <canvas> — do not invert or filter */
+  html[data-darkmode] canvas,
+  html[data-darkmode] img,
+  html[data-darkmode] video {
+    filter: none !important;
+  }
+}

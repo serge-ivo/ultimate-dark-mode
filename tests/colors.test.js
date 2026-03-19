@@ -6,7 +6,8 @@ import {
   isDarkColor,
   remapColor,
   remapTextColor,
-  isMediaTag
+  isMediaTag,
+  getBaseDomain
 } from '../src/content/colors.js'
 
 describe('parseColor', () => {
@@ -238,6 +239,30 @@ describe('isMediaTag', () => {
     expect(isMediaTag(null)).toBe(false)
     expect(isMediaTag(undefined)).toBe(false)
     expect(isMediaTag('')).toBe(false)
+  })
+})
+
+describe('getBaseDomain', () => {
+  it('extracts base domain from subdomains', () => {
+    expect(getBaseDomain('rocketlab.harvestapp.com')).toBe('harvestapp.com')
+    expect(getBaseDomain('www.getharvest.com')).toBe('getharvest.com')
+    expect(getBaseDomain('mail.google.com')).toBe('google.com')
+    expect(getBaseDomain('docs.google.com')).toBe('google.com')
+  })
+
+  it('returns as-is for two-part domains', () => {
+    expect(getBaseDomain('harvestapp.com')).toBe('harvestapp.com')
+    expect(getBaseDomain('google.com')).toBe('google.com')
+  })
+
+  it('handles deep subdomains', () => {
+    expect(getBaseDomain('a.b.c.example.com')).toBe('example.com')
+  })
+
+  it('handles null/undefined/empty', () => {
+    expect(getBaseDomain(null)).toBe('')
+    expect(getBaseDomain(undefined)).toBe('')
+    expect(getBaseDomain('')).toBe('')
   })
 })
 

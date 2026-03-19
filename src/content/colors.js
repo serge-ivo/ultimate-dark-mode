@@ -65,6 +65,19 @@ export function remapTextColor(colorStr) {
 }
 
 /**
+ * Extract the base domain from a hostname.
+ * "rocketlab.harvestapp.com" → "harvestapp.com"
+ * "www.getharvest.com" → "getharvest.com"
+ * "harvestapp.com" → "harvestapp.com"
+ */
+export function getBaseDomain(host) {
+  if (!host || typeof host !== 'string') return ''
+  const parts = host.split('.')
+  if (parts.length <= 2) return host
+  return parts.slice(-2).join('.')
+}
+
+/**
  * Check if a tag name belongs to a media element that should never be altered.
  */
 export function isMediaTag(tagName) {

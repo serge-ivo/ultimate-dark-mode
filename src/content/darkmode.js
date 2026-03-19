@@ -117,13 +117,35 @@
     target.insertBefore(linkEl, target.firstChild)
   }
 
+  function getBaseDomain(host) {
+    // "rocketlab.harvestapp.com" → "harvestapp.com"
+    // "www.getharvest.com" → "getharvest.com"
+    // "harvestapp.com" → "harvestapp.com"
+    const parts = host.split('.')
+    if (parts.length <= 2) return host
+    return parts.slice(-2).join('.')
+  }
+
   function injectOverride() {
     if (overrideLinkEl) return
 
-    // Try to load a site-specific override CSS file
-    const overrideUrl = chrome.runtime.getURL(`src/content/overrides/${hostname}.css`)
+    // Try exact hostname first, then base domain
+    // e.g. "rocketlab.harvestapp.com" → try that, then "harvestapp.com"
+    const candidates = [hostname]
+    const baseDomain = getBaseDomain(hostname)
+    if (baseDomain !== hostname) {
+      candidates.push(baseDomain)
+    }
 
-    // Check if the override file exists by trying to fetch it
+    tryNextOverride(candidates, 0)
+  }
+
+  function tryNextOverride(candidates, index) {
+    if (index >= candidates.length) return
+
+    const candidate = candidates[index]
+    const overrideUrl = chrome.runtime.getURL(`src/content/overrides/${candidate}.css`)
+
     fetch(overrideUrl, { method: 'HEAD' })
       .then(response => {
         if (response.ok) {
@@ -133,13 +155,15 @@
           overrideLinkEl.href = overrideUrl
           overrideLinkEl.id = 'ultimate-darkmode-override'
 
-          // Insert after the base stylesheet
           const target = document.head || document.documentElement
           target.appendChild(overrideLinkEl)
+        } else {
+          // Try next candidate
+          tryNextOverride(candidates, index + 1)
         }
       })
       .catch(() => {
-        // No override for this site — that's fine
+        tryNextOverride(candidates, index + 1)
       })
   }
 

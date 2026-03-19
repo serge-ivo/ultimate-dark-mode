@@ -100,80 +100,91 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     // 2. Screenshot
-    let screenshotCopied = false
+    let screenshotDataUrl = ''
     try {
       log('Capturing screenshot...')
-      const dataUrl = await chrome.tabs.captureVisibleTab(null, { format: 'png' })
-      const res = await fetch(dataUrl)
-      const blob = await res.blob()
-      await navigator.clipboard.write([
-        new ClipboardItem({ 'image/png': blob })
-      ])
-      screenshotCopied = true
-      log('Screenshot copied to clipboard (' + Math.round(blob.size / 1024) + ' KB)', 'ok')
+      screenshotDataUrl = await chrome.tabs.captureVisibleTab(null, { format: 'png' })
+      log('Screenshot captured (' + Math.round(screenshotDataUrl.length / 1024) + ' KB)', 'ok')
     } catch (err) {
       log('Screenshot failed: ' + err.message, 'err')
     }
 
-    // 3. Upload debug info as gist
-    let gistUrl = ''
+    // 3. Copy everything to clipboard as rich text (screenshot) + plain text (debug JSON)
+    // We combine screenshot + debug info into one clipboard write
+    let clipboardOk = false
+    try {
+      log('Copying to clipboard...')
+      const items = {}
+      if (screenshotDataUrl) {
+        const res = await fetch(screenshotDataUrl)
+        const blob = await res.blob()
+        items['image/png'] = blob
+      }
+      if (Object.keys(items).length > 0) {
+        await navigator.clipboard.write([new ClipboardItem(items)])
+        clipboardOk = true
+        log('Screenshot copied to clipboard', 'ok')
+      }
+    } catch (err) {
+      log('Clipboard write failed: ' + err.message, 'err')
+    }
+
+    // 4. Build issue body with debug info inline
+    log('Building issue...')
+
+    // Compact the debug JSON — keep only the most useful fields
+    let compactDebug = ''
     if (debugJson) {
       try {
-        log('Uploading debug info to gist (' + Math.round(debugJson.length / 1024) + ' KB)...')
-        const resp = await fetch('https://api.github.com/gists', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            description: `Dark mode debug info for ${hostname}`,
-            public: true,
-            files: {
-              [`${hostname}-debug.json`]: { content: debugJson }
+        const parsed = JSON.parse(debugJson)
+        const compact = {
+          url: parsed.url,
+          hostname: parsed.hostname,
+          colorScheme: parsed.colorScheme,
+          elements: (parsed.elements || []).map(el => ({
+            tag: el.tag,
+            classes: el.classes?.slice(0, 3),
+            styles: {
+              bg: el.styles?.backgroundColor,
+              color: el.styles?.color
             }
-          })
-        })
-        if (resp.ok) {
-          const gist = await resp.json()
-          gistUrl = gist.html_url
-          log('Gist created: ' + gistUrl, 'ok')
-        } else {
-          const errText = await resp.text()
-          log('Gist upload failed (' + resp.status + '): ' + errText.slice(0, 100), 'err')
+          })),
+          topClasses: (parsed.topClasses || []).slice(0, 20),
+          cssCustomProperties: parsed.cssCustomProperties,
+          inlineStyleCount: parsed.inlineStyleCount,
+          inlineStyleSamples: (parsed.inlineStyleSamples || []).slice(0, 5)
         }
+        compactDebug = JSON.stringify(compact, null, 2)
+        log('Debug info compacted: ' + Math.round(compactDebug.length / 1024) + ' KB', 'ok')
       } catch (err) {
-        log('Gist upload error: ' + err.message, 'err')
+        compactDebug = debugJson.slice(0, 3000)
+        log('Using truncated raw debug info', 'info')
       }
     }
 
-    // 4. Build issue
-    log('Building issue URL...')
     const bodyLines = [
       `### Site URL\n\n${tab.url}`,
-      `\n### Screenshot\n\n${screenshotCopied ? '*(Screenshot copied to clipboard — paste it here)*' : '*(Please attach a screenshot)*'}`
+      `\n### Screenshot\n\n${clipboardOk ? '*(Screenshot copied to clipboard — paste it below)*' : '*(Please attach a screenshot)*'}`
     ]
 
-    if (gistUrl) {
-      bodyLines.push(`\n### Site Debug Info\n\n[CSS/DOM analysis](${gistUrl})`)
-    } else if (debugJson) {
-      // Truncated fallback
-      const truncated = debugJson.slice(0, 2000)
-      bodyLines.push(`\n### Site Debug Info\n\n<details>\n<summary>CSS/DOM analysis (truncated)</summary>\n\n\`\`\`json\n${truncated}\n\`\`\`\n\n</details>`)
-      log('Using truncated inline debug info (gist failed)', 'info')
+    if (compactDebug) {
+      bodyLines.push(`\n### Site Debug Info (CSS/DOM)\n\n<details>\n<summary>Click to expand</summary>\n\n\`\`\`json\n${compactDebug}\n\`\`\`\n\n</details>`)
     }
 
     const title = `[Broken] ${hostname}`
     const body = bodyLines.join('\n')
 
-    // Crop body to fit URL limits
-    const maxBodyLen = 5000
+    // GitHub new issue URL limit is ~8000 chars after encoding
+    const maxBodyLen = 4000
     const croppedBody = body.length > maxBodyLen
-      ? body.slice(0, maxBodyLen) + '\n\n*(truncated — see gist for full data)*'
+      ? body.slice(0, maxBodyLen) + '\n```\n\n</details>\n\n*(truncated)*'
       : body
 
     const issueUrl = `https://github.com/serge-ivo/ultimate-dark-mode/issues/new?title=${encodeURIComponent(title)}&body=${encodeURIComponent(croppedBody)}&labels=${encodeURIComponent('site-override,claude')}`
 
-    log('Issue URL length: ' + issueUrl.length + ' chars', issueUrl.length > 8000 ? 'err' : 'ok')
+    log('Issue URL: ' + issueUrl.length + ' chars', issueUrl.length > 8000 ? 'err' : 'ok')
 
-    if (screenshotCopied) {
+    if (clipboardOk) {
       reportStatus.textContent = 'Screenshot copied — paste in issue'
       reportStatus.className = 'report-status copied'
     } else {

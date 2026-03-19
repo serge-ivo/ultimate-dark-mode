@@ -64,14 +64,18 @@
     }
     meta.content = 'dark'
 
-    // Layer 2: Inject dark mode stylesheet
-    injectStylesheet()
-
-    // Layer 2.5: Inject site-specific override if available
-    injectOverride()
-
-    // Layer 3: JS-assisted — handle inline styles and dynamic content
-    setupObserver()
+    // Check if a site-specific override exists — if so, skip the generic
+    // base CSS and observer to avoid breaking complex apps like Google Sheets
+    checkForOverride().then(hasOverride => {
+      if (hasOverride) {
+        // Site has a dedicated override — use only that
+        injectOverride()
+      } else {
+        // No override — use generic dark mode
+        injectStylesheet()
+        setupObserver()
+      }
+    })
   }
 
   function removeDarkMode() {
@@ -121,6 +125,26 @@
     // Insert as early as possible
     const target = document.head || document.documentElement
     target.insertBefore(linkEl, target.firstChild)
+  }
+
+  async function checkForOverride() {
+    // Check if a site-specific override CSS file exists for this domain
+    const candidates = [hostname]
+    const baseDomain = getBaseDomain(hostname)
+    if (baseDomain !== hostname) {
+      candidates.push(baseDomain)
+    }
+
+    for (const candidate of candidates) {
+      try {
+        const url = chrome.runtime.getURL(`src/content/overrides/${candidate}.css`)
+        const resp = await fetch(url, { method: 'HEAD' })
+        if (resp.ok) return true
+      } catch (e) {
+        // continue
+      }
+    }
+    return false
   }
 
   function getBaseDomain(host) {

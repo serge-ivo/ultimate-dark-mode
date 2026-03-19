@@ -88,7 +88,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     addLog('Starting capture for ' + hostname)
 
-    // 1. Capture debug info
+    // 1. Capture debug info — try content script first, inject if not available
     let debugJson = ''
     try {
       addLog('Requesting debug info from content script...')
@@ -102,7 +102,29 @@ document.addEventListener('DOMContentLoaded', async () => {
       const inlines = debugInfo.inlineStyleCount || 0
       addLog(`Captured: ${elements} elements, ${classes} classes, ${props} CSS vars, ${inlines} inline styles`, 'ok')
     } catch (err) {
-      addLog('Failed to capture debug info: ' + err.message, 'err')
+      addLog('Content script not loaded, injecting capture script...', 'info')
+      try {
+        // Inject capture.js and run it directly
+        await chrome.scripting.executeScript({
+          target: { tabId: tab.id },
+          files: ['src/content/capture.js']
+        })
+        const results = await chrome.scripting.executeScript({
+          target: { tabId: tab.id },
+          func: () => globalThis.__captureSiteDebugInfo()
+        })
+        if (results?.[0]?.result) {
+          const debugInfo = results[0].result
+          debugJson = JSON.stringify(debugInfo, null, 2)
+          const elements = debugInfo.elements?.length || 0
+          const classes = debugInfo.topClasses?.length || 0
+          const props = Object.keys(debugInfo.cssCustomProperties || {}).length
+          const inlines = debugInfo.inlineStyleCount || 0
+          addLog(`Injected & captured: ${elements} elements, ${classes} classes, ${props} CSS vars, ${inlines} inline styles`, 'ok')
+        }
+      } catch (injectErr) {
+        addLog('Inject failed: ' + injectErr.message, 'err')
+      }
     }
 
     // 2. Screenshot

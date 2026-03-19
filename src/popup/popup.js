@@ -151,57 +151,72 @@ document.addEventListener('DOMContentLoaded', async () => {
       addLog('Clipboard write failed: ' + err.message, 'err')
     }
 
-    // 4. Compact debug JSON
+    // 4. Compact debug JSON — very aggressive, only what the agent needs
     let compactDebug = ''
     if (debugJson) {
       try {
         const parsed = JSON.parse(debugJson)
         const compact = {
-          url: parsed.url,
           hostname: parsed.hostname,
           colorScheme: parsed.colorScheme,
-          elements: (parsed.elements || []).map(el => ({
-            tag: el.tag,
-            classes: el.classes?.slice(0, 3),
-            styles: { bg: el.styles?.backgroundColor, color: el.styles?.color }
-          })),
-          topClasses: (parsed.topClasses || []).slice(0, 20),
-          cssCustomProperties: parsed.cssCustomProperties,
-          inlineStyleCount: parsed.inlineStyleCount,
-          inlineStyleSamples: (parsed.inlineStyleSamples || []).slice(0, 5)
+          // Only elements with non-transparent backgrounds
+          elements: (parsed.elements || [])
+            .filter(el => el.styles?.backgroundColor && el.styles.backgroundColor !== 'rgba(0, 0, 0, 0)')
+            .slice(0, 10)
+            .map(el => `${el.tag}.${(el.classes || []).join('.')} bg:${el.styles.backgroundColor} c:${el.styles.color}`),
+          classes: (parsed.topClasses || []).slice(0, 10).map(c => c.class),
+          cssVars: Object.keys(parsed.cssCustomProperties || {}).slice(0, 10),
+          inlineStyles: parsed.inlineStyleCount || 0
         }
-        compactDebug = JSON.stringify(compact, null, 2)
+        compactDebug = JSON.stringify(compact)
         addLog('Debug compacted: ' + compactDebug.length + ' chars', 'ok')
       } catch (err) {
-        compactDebug = debugJson.slice(0, 3000)
-        addLog('Using truncated raw debug', 'info')
+        addLog('Debug compact failed', 'err')
       }
     }
 
-    // 5. Build issue body — include debug log + CSS data
-    const bodyLines = [
-      `### Site URL\n\n${tab.url}`,
-      `\n### Screenshot\n\n${clipboardOk ? '*(Screenshot copied to clipboard — paste it here)*' : '*(Please attach a screenshot)*'}`
-    ]
-
-    if (compactDebug) {
-      bodyLines.push(`\n### Site Debug Info (CSS/DOM)\n\n<details>\n<summary>Click to expand</summary>\n\n\`\`\`json\n${compactDebug}\n\`\`\`\n\n</details>`)
+    // 5. Save full debug data to storage for later retrieval
+    if (debugJson) {
+      try {
+        await chrome.storage.local.set({
+          lastDebugCapture: {
+            hostname,
+            timestamp: Date.now(),
+            data: debugJson
+          }
+        })
+        addLog('Full debug data saved to extension storage', 'ok')
+      } catch (err) {
+        addLog('Storage save failed: ' + err.message, 'err')
+      }
     }
 
-    // Append capture log so user can see what happened
-    bodyLines.push(`\n### Capture Log\n\n\`\`\`\n${logs.join('\n')}\n\`\`\``)
-
+    // 6. Build issue body — keep it small for URL
     const title = `[Broken] ${hostname}`
-    const body = bodyLines.join('\n')
+    let body = `### Site URL\n\n${tab.url}\n`
+    body += `\n### Screenshot\n\n${clipboardOk ? '*(Screenshot copied to clipboard — paste it here)*' : '*(Please attach a screenshot)*'}\n`
 
-    const maxBodyLen = 4000
-    const croppedBody = body.length > maxBodyLen
-      ? body.slice(0, maxBodyLen) + '\n```\n\n*(body truncated at 4K chars)*'
-      : body
+    if (compactDebug) {
+      body += `\n### Site Debug Info\n\n\`\`\`json\n${compactDebug}\n\`\`\`\n`
+    }
 
-    const issueUrl = `https://github.com/serge-ivo/ultimate-dark-mode/issues/new?title=${encodeURIComponent(title)}&body=${encodeURIComponent(croppedBody)}&labels=${encodeURIComponent('site-override,claude')}`
+    body += `\n### Capture Log\n\n\`\`\`\n${logs.join('\n')}\n\`\`\``
 
-    addLog('Issue URL: ' + issueUrl.length + ' chars', issueUrl.length > 8000 ? 'err' : 'ok')
+    // Measure encoded URL length and trim if needed
+    const maxUrl = 7500
+    let issueUrl = `https://github.com/serge-ivo/ultimate-dark-mode/issues/new?title=${encodeURIComponent(title)}&body=${encodeURIComponent(body)}&labels=${encodeURIComponent('site-override,claude')}`
+
+    if (issueUrl.length > maxUrl) {
+      // Drop debug info, keep just URL + screenshot + log
+      addLog('URL too long (' + issueUrl.length + '), trimming debug info', 'info')
+      body = `### Site URL\n\n${tab.url}\n`
+      body += `\n### Screenshot\n\n${clipboardOk ? '*(Screenshot copied to clipboard — paste it here)*' : '*(Please attach a screenshot)*'}\n`
+      body += `\n### Site Debug Info\n\nFull debug data captured — stored in extension. Use browser console on extension page:\n\`chrome.storage.local.get('lastDebugCapture', r => console.log(r))\`\n`
+      body += `\n### Capture Log\n\n\`\`\`\n${logs.join('\n')}\n\`\`\``
+      issueUrl = `https://github.com/serge-ivo/ultimate-dark-mode/issues/new?title=${encodeURIComponent(title)}&body=${encodeURIComponent(body)}&labels=${encodeURIComponent('site-override,claude')}`
+    }
+
+    addLog('Final URL: ' + issueUrl.length + ' chars', issueUrl.length > maxUrl ? 'err' : 'ok')
 
     if (clipboardOk) {
       reportStatus.textContent = 'Screenshot copied — paste in issue'

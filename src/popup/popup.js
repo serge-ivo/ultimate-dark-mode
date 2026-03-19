@@ -80,12 +80,18 @@ document.addEventListener('DOMContentLoaded', async () => {
     reportStatus.textContent = 'Capturing...'
     reportStatus.className = 'report-status'
 
-    log('Starting capture for ' + hostname)
+    const logs = []
+    function addLog(msg, type = 'info') {
+      log(msg, type)
+      logs.push(`[${type}] ${msg}`)
+    }
+
+    addLog('Starting capture for ' + hostname)
 
     // 1. Capture debug info
     let debugJson = ''
     try {
-      log('Requesting debug info from content script...')
+      addLog('Requesting debug info from content script...')
       const debugInfo = await chrome.tabs.sendMessage(tab.id, {
         type: 'capture-debug-info'
       })
@@ -94,45 +100,36 @@ document.addEventListener('DOMContentLoaded', async () => {
       const classes = debugInfo.topClasses?.length || 0
       const props = Object.keys(debugInfo.cssCustomProperties || {}).length
       const inlines = debugInfo.inlineStyleCount || 0
-      log(`Captured: ${elements} elements, ${classes} classes, ${props} CSS vars, ${inlines} inline styles`, 'ok')
+      addLog(`Captured: ${elements} elements, ${classes} classes, ${props} CSS vars, ${inlines} inline styles`, 'ok')
     } catch (err) {
-      log('Failed to capture debug info: ' + err.message, 'err')
+      addLog('Failed to capture debug info: ' + err.message, 'err')
     }
 
     // 2. Screenshot
     let screenshotDataUrl = ''
     try {
-      log('Capturing screenshot...')
+      addLog('Capturing screenshot...')
       screenshotDataUrl = await chrome.tabs.captureVisibleTab(null, { format: 'png' })
-      log('Screenshot captured (' + Math.round(screenshotDataUrl.length / 1024) + ' KB)', 'ok')
+      addLog('Screenshot captured (' + Math.round(screenshotDataUrl.length / 1024) + ' KB)', 'ok')
     } catch (err) {
-      log('Screenshot failed: ' + err.message, 'err')
+      addLog('Screenshot failed: ' + err.message, 'err')
     }
 
-    // 3. Copy everything to clipboard as rich text (screenshot) + plain text (debug JSON)
-    // We combine screenshot + debug info into one clipboard write
+    // 3. Copy screenshot to clipboard
     let clipboardOk = false
     try {
-      log('Copying to clipboard...')
-      const items = {}
       if (screenshotDataUrl) {
         const res = await fetch(screenshotDataUrl)
         const blob = await res.blob()
-        items['image/png'] = blob
-      }
-      if (Object.keys(items).length > 0) {
-        await navigator.clipboard.write([new ClipboardItem(items)])
+        await navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })])
         clipboardOk = true
-        log('Screenshot copied to clipboard', 'ok')
+        addLog('Screenshot copied to clipboard', 'ok')
       }
     } catch (err) {
-      log('Clipboard write failed: ' + err.message, 'err')
+      addLog('Clipboard write failed: ' + err.message, 'err')
     }
 
-    // 4. Build issue body with debug info inline
-    log('Building issue...')
-
-    // Compact the debug JSON — keep only the most useful fields
+    // 4. Compact debug JSON
     let compactDebug = ''
     if (debugJson) {
       try {
@@ -144,10 +141,7 @@ document.addEventListener('DOMContentLoaded', async () => {
           elements: (parsed.elements || []).map(el => ({
             tag: el.tag,
             classes: el.classes?.slice(0, 3),
-            styles: {
-              bg: el.styles?.backgroundColor,
-              color: el.styles?.color
-            }
+            styles: { bg: el.styles?.backgroundColor, color: el.styles?.color }
           })),
           topClasses: (parsed.topClasses || []).slice(0, 20),
           cssCustomProperties: parsed.cssCustomProperties,
@@ -155,34 +149,37 @@ document.addEventListener('DOMContentLoaded', async () => {
           inlineStyleSamples: (parsed.inlineStyleSamples || []).slice(0, 5)
         }
         compactDebug = JSON.stringify(compact, null, 2)
-        log('Debug info compacted: ' + Math.round(compactDebug.length / 1024) + ' KB', 'ok')
+        addLog('Debug compacted: ' + compactDebug.length + ' chars', 'ok')
       } catch (err) {
         compactDebug = debugJson.slice(0, 3000)
-        log('Using truncated raw debug info', 'info')
+        addLog('Using truncated raw debug', 'info')
       }
     }
 
+    // 5. Build issue body — include debug log + CSS data
     const bodyLines = [
       `### Site URL\n\n${tab.url}`,
-      `\n### Screenshot\n\n${clipboardOk ? '*(Screenshot copied to clipboard — paste it below)*' : '*(Please attach a screenshot)*'}`
+      `\n### Screenshot\n\n${clipboardOk ? '*(Screenshot copied to clipboard — paste it here)*' : '*(Please attach a screenshot)*'}`
     ]
 
     if (compactDebug) {
       bodyLines.push(`\n### Site Debug Info (CSS/DOM)\n\n<details>\n<summary>Click to expand</summary>\n\n\`\`\`json\n${compactDebug}\n\`\`\`\n\n</details>`)
     }
 
+    // Append capture log so user can see what happened
+    bodyLines.push(`\n### Capture Log\n\n\`\`\`\n${logs.join('\n')}\n\`\`\``)
+
     const title = `[Broken] ${hostname}`
     const body = bodyLines.join('\n')
 
-    // GitHub new issue URL limit is ~8000 chars after encoding
     const maxBodyLen = 4000
     const croppedBody = body.length > maxBodyLen
-      ? body.slice(0, maxBodyLen) + '\n```\n\n</details>\n\n*(truncated)*'
+      ? body.slice(0, maxBodyLen) + '\n```\n\n*(body truncated at 4K chars)*'
       : body
 
     const issueUrl = `https://github.com/serge-ivo/ultimate-dark-mode/issues/new?title=${encodeURIComponent(title)}&body=${encodeURIComponent(croppedBody)}&labels=${encodeURIComponent('site-override,claude')}`
 
-    log('Issue URL: ' + issueUrl.length + ' chars', issueUrl.length > 8000 ? 'err' : 'ok')
+    addLog('Issue URL: ' + issueUrl.length + ' chars', issueUrl.length > 8000 ? 'err' : 'ok')
 
     if (clipboardOk) {
       reportStatus.textContent = 'Screenshot copied — paste in issue'
@@ -191,7 +188,6 @@ document.addEventListener('DOMContentLoaded', async () => {
       reportStatus.textContent = 'Opening issue...'
     }
 
-    log('Opening GitHub issue...', 'ok')
     chrome.tabs.create({ url: issueUrl })
   })
 })

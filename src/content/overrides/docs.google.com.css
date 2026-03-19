@@ -1,0 +1,302 @@
+/*
+ * Site override: docs.google.com (Google Docs / Google Sheets / Google Slides)
+ *
+ * Google Workspace apps have a partially dark-aware toolbar but a bright white
+ * content/editing area. The spreadsheet grid in Sheets is canvas-rendered and
+ * cannot be styled by CSS — this override handles the surrounding chrome UI.
+ *
+ * Key areas covered:
+ *   - App chrome: menu bar, toolbar, formula bar
+ *   - Sheet tabs strip (Sheets)
+ *   - Sidebar panels (comments, explore, format options)
+ *   - Right-click context menus and dropdown menus
+ *   - Dialogs and modals
+ *   - Name box and formula bar (Sheets)
+ *   - Document editing area (Docs/Slides — non-canvas)
+ */
+
+@layer darkmode.overrides {
+
+  /* ── Base shell ─────────────────────────────────────────────────── */
+
+  html[data-darkmode] body,
+  html[data-darkmode] .docs-ui-unprintable {
+    background-color: oklch(0.15 0.01 260);
+    color: oklch(0.93 0.01 260);
+  }
+
+  /* ── Menu bar (File, Edit, View, …) ─────────────────────────────── */
+
+  html[data-darkmode] #docs-chrome,
+  html[data-darkmode] .docs-titlebar,
+  html[data-darkmode] .docs-menubar-container,
+  html[data-darkmode] .docs-menubar {
+    background-color: oklch(0.20 0.01 260) !important;
+    border-bottom-color: oklch(0.30 0.01 260) !important;
+    color: oklch(0.93 0.01 260) !important;
+  }
+
+  html[data-darkmode] .docs-menubar-button,
+  html[data-darkmode] .docs-menubar-button-label {
+    color: oklch(0.93 0.01 260) !important;
+  }
+
+  html[data-darkmode] .docs-menubar-button:hover,
+  html[data-darkmode] .docs-menubar-button.goog-control-open {
+    background-color: oklch(0.28 0.01 260) !important;
+  }
+
+  /* ── Toolbar (bold, italic, font picker, …) ─────────────────────── */
+
+  html[data-darkmode] .docs-toolbar,
+  html[data-darkmode] .goog-toolbar,
+  html[data-darkmode] #docs-toolbar,
+  html[data-darkmode] .waffle-toolbar {
+    background-color: oklch(0.20 0.01 260) !important;
+    border-bottom-color: oklch(0.30 0.01 260) !important;
+    color: oklch(0.93 0.01 260) !important;
+  }
+
+  html[data-darkmode] .goog-toolbar-button,
+  html[data-darkmode] .docs-toolbar-button {
+    color: oklch(0.93 0.01 260) !important;
+  }
+
+  html[data-darkmode] .goog-toolbar-button:hover,
+  html[data-darkmode] .goog-toolbar-button.goog-toolbar-button-hover {
+    background-color: oklch(0.28 0.01 260) !important;
+  }
+
+  /* ── Formula bar (Sheets) ────────────────────────────────────────── */
+
+  html[data-darkmode] .cell-input-container,
+  html[data-darkmode] #t-formula-bar-container,
+  html[data-darkmode] .waffle-formula-bar {
+    background-color: oklch(0.18 0.01 260) !important;
+    border-bottom-color: oklch(0.30 0.01 260) !important;
+    color: oklch(0.93 0.01 260) !important;
+  }
+
+  html[data-darkmode] .cell-input,
+  html[data-darkmode] #t-formula-bar-input,
+  html[data-darkmode] .waffle-formula-bar-input {
+    background-color: oklch(0.18 0.01 260) !important;
+    color: oklch(0.93 0.01 260) !important;
+    caret-color: oklch(0.93 0.01 260);
+  }
+
+  /* Name box (cell reference, e.g. "A1") */
+  html[data-darkmode] .waffle-name-box,
+  html[data-darkmode] #t-name-box {
+    background-color: oklch(0.18 0.01 260) !important;
+    color: oklch(0.93 0.01 260) !important;
+    border-color: oklch(0.30 0.01 260) !important;
+  }
+
+  /* ── Document editing canvas area (Docs / Slides) ───────────────── */
+  /* Note: Sheets cell grid is <canvas>-rendered — CSS cannot restyle it */
+
+  html[data-darkmode] .docs-editor-container,
+  html[data-darkmode] .docs-editor {
+    background-color: oklch(0.15 0.01 260) !important;
+  }
+
+  /* The white page surface inside Docs */
+  html[data-darkmode] .kix-page,
+  html[data-darkmode] .kix-page-paginated {
+    background-color: oklch(0.18 0.01 260) !important;
+    box-shadow: 0 1px 4px oklch(0.05 0.01 260) !important;
+    color: oklch(0.93 0.01 260) !important;
+  }
+
+  /* ── Sheet tab strip (bottom of Sheets) ─────────────────────────── */
+
+  html[data-darkmode] .docs-sheet-tab-bar,
+  html[data-darkmode] #sheet-menu-container,
+  html[data-darkmode] .waffle-sheet-tab-strip,
+  html[data-darkmode] .waffle-sheet-tab-strip-container {
+    background-color: oklch(0.18 0.01 260) !important;
+    border-top-color: oklch(0.30 0.01 260) !important;
+  }
+
+  html[data-darkmode] .docs-sheet-tab,
+  html[data-darkmode] .waffle-sheet-tab {
+    background-color: oklch(0.22 0.01 260) !important;
+    color: oklch(0.93 0.01 260) !important;
+    border-color: oklch(0.30 0.01 260) !important;
+  }
+
+  html[data-darkmode] .docs-sheet-tab.docs-sheet-active-tab,
+  html[data-darkmode] .waffle-sheet-tab-selected {
+    background-color: oklch(0.15 0.01 260) !important;
+    color: oklch(0.95 0.01 260) !important;
+  }
+
+  html[data-darkmode] .docs-sheet-tab:hover,
+  html[data-darkmode] .waffle-sheet-tab:hover {
+    background-color: oklch(0.28 0.01 260) !important;
+  }
+
+  /* ── Dropdown menus (File menu, View menu, etc.) ─────────────────── */
+
+  html[data-darkmode] .goog-menu,
+  html[data-darkmode] .docs-menu,
+  html[data-darkmode] .goog-menu-vertical {
+    background-color: oklch(0.20 0.01 260) !important;
+    border-color: oklch(0.30 0.01 260) !important;
+    box-shadow: 0 4px 12px oklch(0.05 0.02 260 / 0.6) !important;
+    color: oklch(0.93 0.01 260) !important;
+  }
+
+  html[data-darkmode] .goog-menuitem,
+  html[data-darkmode] .docs-menuitem {
+    color: oklch(0.93 0.01 260) !important;
+  }
+
+  html[data-darkmode] .goog-menuitem:hover,
+  html[data-darkmode] .goog-menuitem.goog-menuitem-highlight {
+    background-color: oklch(0.28 0.01 260) !important;
+    color: oklch(0.97 0.01 260) !important;
+  }
+
+  html[data-darkmode] .goog-menuitem-disabled,
+  html[data-darkmode] .goog-menuitem[aria-disabled="true"] {
+    color: oklch(0.45 0.01 260) !important;
+  }
+
+  html[data-darkmode] .goog-menuseparator {
+    border-top-color: oklch(0.30 0.01 260) !important;
+  }
+
+  /* Submenu arrow icons — keep them visible */
+  html[data-darkmode] .goog-menuitem-accel {
+    color: oklch(0.65 0.01 260) !important;
+  }
+
+  /* ── Right-click context menus ───────────────────────────────────── */
+
+  html[data-darkmode] .waffle-context-menu,
+  html[data-darkmode] .docs-context-menu {
+    background-color: oklch(0.20 0.01 260) !important;
+    border-color: oklch(0.30 0.01 260) !important;
+    box-shadow: 0 4px 12px oklch(0.05 0.02 260 / 0.6) !important;
+    color: oklch(0.93 0.01 260) !important;
+  }
+
+  /* ── Sidebar panels (comments, explore, format, …) ──────────────── */
+
+  html[data-darkmode] .docs-chat-container,
+  html[data-darkmode] .docs-sidebar,
+  html[data-darkmode] .exploration-sidebar,
+  html[data-darkmode] [class*="sidebar"] {
+    background-color: oklch(0.18 0.01 260) !important;
+    border-left-color: oklch(0.30 0.01 260) !important;
+    color: oklch(0.93 0.01 260) !important;
+  }
+
+  /* Comments / suggestions panel */
+  html[data-darkmode] .docos-stream-view,
+  html[data-darkmode] .docos-note-resolve-button,
+  html[data-darkmode] .docos-anchoreddocoview-content {
+    background-color: oklch(0.20 0.01 260) !important;
+    border-color: oklch(0.30 0.01 260) !important;
+    color: oklch(0.93 0.01 260) !important;
+  }
+
+  /* ── Dialogs and modals ──────────────────────────────────────────── */
+
+  html[data-darkmode] .docs-dialog,
+  html[data-darkmode] .goog-dialog,
+  html[data-darkmode] .modal-dialog,
+  html[data-darkmode] [role="dialog"] {
+    background-color: oklch(0.20 0.01 260) !important;
+    border-color: oklch(0.30 0.01 260) !important;
+    color: oklch(0.93 0.01 260) !important;
+  }
+
+  html[data-darkmode] .docs-dialog-title,
+  html[data-darkmode] .goog-dialog-title {
+    background-color: oklch(0.22 0.01 260) !important;
+    border-bottom-color: oklch(0.30 0.01 260) !important;
+    color: oklch(0.93 0.01 260) !important;
+  }
+
+  html[data-darkmode] .docs-dialog-content,
+  html[data-darkmode] .goog-dialog-content {
+    background-color: oklch(0.20 0.01 260) !important;
+    color: oklch(0.93 0.01 260) !important;
+  }
+
+  html[data-darkmode] .docs-dialog-footer,
+  html[data-darkmode] .goog-dialog-footer,
+  html[data-darkmode] .goog-buttonset {
+    background-color: oklch(0.22 0.01 260) !important;
+    border-top-color: oklch(0.30 0.01 260) !important;
+  }
+
+  /* ── Buttons ─────────────────────────────────────────────────────── */
+
+  html[data-darkmode] .goog-button,
+  html[data-darkmode] .docs-primary-button {
+    background-color: oklch(0.65 0.15 250) !important;
+    color: oklch(0.98 0.01 260) !important;
+    border-color: transparent !important;
+  }
+
+  html[data-darkmode] .goog-button:hover,
+  html[data-darkmode] .docs-primary-button:hover {
+    background-color: oklch(0.58 0.15 250) !important;
+  }
+
+  html[data-darkmode] .goog-button-base,
+  html[data-darkmode] .docs-secondary-button {
+    background-color: oklch(0.25 0.01 260) !important;
+    color: oklch(0.93 0.01 260) !important;
+    border-color: oklch(0.35 0.01 260) !important;
+  }
+
+  /* ── Input fields ────────────────────────────────────────────────── */
+
+  html[data-darkmode] input[type="text"],
+  html[data-darkmode] input[type="search"],
+  html[data-darkmode] input[type="number"],
+  html[data-darkmode] textarea,
+  html[data-darkmode] .docs-input {
+    background-color: oklch(0.18 0.01 260) !important;
+    color: oklch(0.93 0.01 260) !important;
+    border-color: oklch(0.35 0.01 260) !important;
+    caret-color: oklch(0.93 0.01 260);
+  }
+
+  html[data-darkmode] input[type="text"]:focus,
+  html[data-darkmode] input[type="search"]:focus,
+  html[data-darkmode] textarea:focus {
+    border-color: oklch(0.65 0.15 250) !important;
+    outline-color: oklch(0.65 0.15 250) !important;
+  }
+
+  /* ── Scrollbars ──────────────────────────────────────────────────── */
+
+  html[data-darkmode] ::-webkit-scrollbar-track {
+    background-color: oklch(0.18 0.01 260);
+  }
+
+  html[data-darkmode] ::-webkit-scrollbar-thumb {
+    background-color: oklch(0.35 0.01 260);
+    border-radius: 4px;
+  }
+
+  html[data-darkmode] ::-webkit-scrollbar-thumb:hover {
+    background-color: oklch(0.45 0.01 260);
+  }
+
+  /* ── Preserve media — never restyle images/canvas/video ─────────── */
+  /* (canvas is already exempt since cell grid uses canvas rendering)  */
+
+  html[data-darkmode] img,
+  html[data-darkmode] video,
+  html[data-darkmode] canvas,
+  html[data-darkmode] svg image {
+    filter: none !important;
+  }
+}

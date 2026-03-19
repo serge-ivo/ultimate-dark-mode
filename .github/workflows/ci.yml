@@ -19,9 +19,10 @@ jobs:
 
       - run: npm ci
 
+      # Unit tests + override validation (both run via npm test)
       - run: npm test
 
-  lint:
+  validate:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -29,8 +30,25 @@ jobs:
       - name: Validate manifest.json
         run: node -e "JSON.parse(require('fs').readFileSync('manifest.json', 'utf8')); console.log('manifest.json is valid')"
 
+      - name: Validate override CSS files
+        run: node scripts/validate-overrides.js
+
       - name: Check no console.log in production code
         run: |
           if grep -r "console\.log" src/ --include="*.js"; then
             echo "::warning::console.log found in production code"
+          fi
+
+      - name: Check no external URLs in overrides
+        run: |
+          if grep -rn "url(" src/content/overrides/ --include="*.css" 2>/dev/null | grep -i "https\?:"; then
+            echo "::error::External URLs found in override CSS — security violation"
+            exit 1
+          fi
+
+      - name: Check no @import in overrides
+        run: |
+          if grep -rn "@import" src/content/overrides/ --include="*.css" 2>/dev/null; then
+            echo "::error::@import found in override CSS — security violation"
+            exit 1
           fi

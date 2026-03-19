@@ -5,7 +5,8 @@
   "description": "Dark mode for every website. AI-built, open source.",
   "type": "module",
   "scripts": {
-    "test": "vitest run",
+    "test": "vitest run && node scripts/validate-overrides.js",
+    "validate": "node scripts/validate-overrides.js",
     "test:watch": "vitest",
     "test:extension": "node scripts/test-extension.js",
     "test:headed": "node scripts/test-extension.js --headed",

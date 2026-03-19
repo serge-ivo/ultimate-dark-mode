@@ -1,69 +1,312 @@
 /*
- * Site override: www.getharvest.com (Harvest time tracking)
- * Harvest has no native dark mode. This override targets its specific layout.
+ * Site override: harvestapp.com (Harvest time tracking app)
+ * Addresses broken dark mode on the Harvest web application UI.
+ * Ref: https://github.com/serge-ivo/ultimate-dark-mode/issues/1
  */
 
 @layer darkmode.overrides {
-  /* Header / Navigation */
+  /* Base app shell */
+  html[data-darkmode] body,
+  html[data-darkmode] #app,
+  html[data-darkmode] .app,
+  html[data-darkmode] [class*="App__"],
+  html[data-darkmode] [class*="Layout__"] {
+    background-color: oklch(0.15 0.01 260);
+    color: oklch(0.93 0.01 260);
+  }
+
+  /* Sidebar / left nav */
+  html[data-darkmode] [class*="Sidebar"],
+  html[data-darkmode] [class*="sidebar"],
+  html[data-darkmode] .sidebar,
+  html[data-darkmode] #sidebar,
+  html[data-darkmode] nav[role="navigation"],
+  html[data-darkmode] [class*="SideNav"],
+  html[data-darkmode] [class*="sidenav"] {
+    background-color: oklch(0.12 0.01 260);
+    border-right-color: oklch(0.25 0.01 260);
+    color: oklch(0.88 0.01 260);
+  }
+
+  /* Top header / toolbar */
   html[data-darkmode] header,
-  html[data-darkmode] .site-header,
-  html[data-darkmode] nav {
-    background-color: oklch(0.18 0.01 260) !important;
+  html[data-darkmode] [class*="Header"],
+  html[data-darkmode] [class*="Topbar"],
+  html[data-darkmode] [class*="toolbar"],
+  html[data-darkmode] [class*="Toolbar"],
+  html[data-darkmode] [class*="NavBar"],
+  html[data-darkmode] [class*="navbar"] {
+    background-color: oklch(0.18 0.01 260);
+    border-bottom-color: oklch(0.28 0.01 260);
+    color: oklch(0.93 0.01 260);
   }
 
-  /* Hero sections — often have custom backgrounds */
-  html[data-darkmode] [class*="hero"],
-  html[data-darkmode] [class*="Hero"],
-  html[data-darkmode] [class*="banner"],
-  html[data-darkmode] [class*="Banner"] {
-    background-color: oklch(0.17 0.01 260) !important;
+  /* Nav links */
+  html[data-darkmode] [class*="Sidebar"] a,
+  html[data-darkmode] [class*="sidebar"] a,
+  html[data-darkmode] nav a {
+    color: oklch(0.80 0.01 260);
   }
 
-  /* Mega menu dropdowns */
-  html[data-darkmode] .megamenu,
-  html[data-darkmode] [class*="megamenu"],
-  html[data-darkmode] [class*="dropdown"] {
-    background-color: oklch(0.20 0.01 260) !important;
-    border-color: oklch(0.30 0.01 260) !important;
+  html[data-darkmode] [class*="Sidebar"] a:hover,
+  html[data-darkmode] [class*="sidebar"] a:hover,
+  html[data-darkmode] nav a:hover,
+  html[data-darkmode] [class*="active"] a,
+  html[data-darkmode] a[class*="active"],
+  html[data-darkmode] [class*="selected"] a {
+    color: oklch(0.93 0.01 260);
+    background-color: oklch(0.25 0.02 260);
   }
 
-  /* Feature sections and content cards */
-  html[data-darkmode] [class*="feature"],
-  html[data-darkmode] [class*="Feature"],
-  html[data-darkmode] [class*="testimonial"],
-  html[data-darkmode] [class*="Testimonial"] {
-    background-color: oklch(0.18 0.01 260) !important;
-    color: oklch(0.88 0.01 260) !important;
+  /* Main content area */
+  html[data-darkmode] main,
+  html[data-darkmode] [class*="Content"],
+  html[data-darkmode] [class*="content-area"],
+  html[data-darkmode] [class*="PageContent"],
+  html[data-darkmode] [class*="MainContent"],
+  html[data-darkmode] [role="main"] {
+    background-color: oklch(0.15 0.01 260);
+    color: oklch(0.93 0.01 260);
   }
 
-  /* CTA buttons — preserve brand color but adjust for dark bg */
+  /* Cards, panels, sections */
+  html[data-darkmode] [class*="Card"],
+  html[data-darkmode] [class*="card"],
+  html[data-darkmode] [class*="Panel"],
+  html[data-darkmode] [class*="panel"],
+  html[data-darkmode] [class*="Section"],
+  html[data-darkmode] [class*="Box"],
+  html[data-darkmode] [class*="Container"] {
+    background-color: oklch(0.20 0.01 260);
+    border-color: oklch(0.30 0.01 260);
+    color: oklch(0.93 0.01 260);
+  }
+
+  /* Tables (timesheet grid) */
+  html[data-darkmode] table,
+  html[data-darkmode] [class*="Table"],
+  html[data-darkmode] [class*="table"] {
+    background-color: oklch(0.18 0.01 260);
+    color: oklch(0.93 0.01 260);
+  }
+
+  html[data-darkmode] thead,
+  html[data-darkmode] th,
+  html[data-darkmode] [class*="TableHead"],
+  html[data-darkmode] [class*="thead"] {
+    background-color: oklch(0.22 0.01 260);
+    color: oklch(0.75 0.01 260);
+    border-bottom-color: oklch(0.30 0.01 260);
+  }
+
+  html[data-darkmode] tbody tr,
+  html[data-darkmode] [class*="TableRow"],
+  html[data-darkmode] [class*="row"] {
+    border-bottom-color: oklch(0.28 0.01 260);
+  }
+
+  html[data-darkmode] tbody tr:hover,
+  html[data-darkmode] [class*="TableRow"]:hover {
+    background-color: oklch(0.22 0.01 260);
+  }
+
+  html[data-darkmode] td {
+    color: oklch(0.90 0.01 260);
+    border-color: oklch(0.28 0.01 260);
+  }
+
+  /* Time entry rows / day blocks */
+  html[data-darkmode] [class*="TimeEntry"],
+  html[data-darkmode] [class*="time-entry"],
+  html[data-darkmode] [class*="DayEntry"],
+  html[data-darkmode] [class*="day-entry"],
+  html[data-darkmode] [class*="WeekEntry"],
+  html[data-darkmode] [class*="TimerRow"] {
+    background-color: oklch(0.20 0.01 260);
+    border-color: oklch(0.28 0.01 260);
+    color: oklch(0.93 0.01 260);
+  }
+
+  /* Date headers */
+  html[data-darkmode] [class*="DateHeader"],
+  html[data-darkmode] [class*="date-header"],
+  html[data-darkmode] [class*="DayHeader"],
+  html[data-darkmode] [class*="day-header"] {
+    background-color: oklch(0.17 0.01 260);
+    color: oklch(0.65 0.01 260);
+    border-color: oklch(0.28 0.01 260);
+  }
+
+  /* Forms and inputs */
+  html[data-darkmode] input,
+  html[data-darkmode] textarea,
+  html[data-darkmode] select,
+  html[data-darkmode] [class*="Input"],
+  html[data-darkmode] [class*="Select"],
+  html[data-darkmode] [class*="Textarea"],
+  html[data-darkmode] [class*="input"] {
+    background-color: oklch(0.22 0.01 260);
+    color: oklch(0.93 0.01 260);
+    border-color: oklch(0.35 0.01 260);
+  }
+
+  html[data-darkmode] input:focus,
+  html[data-darkmode] textarea:focus,
+  html[data-darkmode] select:focus {
+    border-color: oklch(0.65 0.15 250);
+    outline-color: oklch(0.65 0.15 250);
+  }
+
+  html[data-darkmode] input::placeholder,
+  html[data-darkmode] textarea::placeholder {
+    color: oklch(0.50 0.01 260);
+  }
+
+  /* Dropdowns / select menus */
+  html[data-darkmode] [class*="Dropdown"],
+  html[data-darkmode] [class*="dropdown"],
+  html[data-darkmode] [class*="Popover"],
+  html[data-darkmode] [class*="popover"],
+  html[data-darkmode] [class*="Menu"],
+  html[data-darkmode] [role="listbox"],
+  html[data-darkmode] [role="menu"] {
+    background-color: oklch(0.20 0.01 260);
+    border-color: oklch(0.30 0.01 260);
+    color: oklch(0.93 0.01 260);
+    box-shadow: 0 4px 16px oklch(0.05 0.01 260 / 0.6);
+  }
+
+  html[data-darkmode] [role="option"]:hover,
+  html[data-darkmode] [role="menuitem"]:hover,
+  html[data-darkmode] [class*="MenuItem"]:hover {
+    background-color: oklch(0.27 0.02 260);
+  }
+
+  /* Buttons — primary (green brand) */
+  html[data-darkmode] button[class*="primary"],
   html[data-darkmode] [class*="btn-primary"],
-  html[data-darkmode] [class*="cta"],
-  html[data-darkmode] [class*="CTA"] {
-    background-color: oklch(0.55 0.18 145) !important;
-    color: oklch(0.98 0.01 260) !important;
-    border-color: transparent !important;
+  html[data-darkmode] [class*="Button--primary"],
+  html[data-darkmode] [class*="PrimaryButton"] {
+    background-color: oklch(0.55 0.18 145);
+    color: oklch(0.98 0.01 260);
+    border-color: transparent;
   }
 
-  /* Footer */
-  html[data-darkmode] footer,
-  html[data-darkmode] [class*="footer"],
-  html[data-darkmode] [class*="Footer"] {
-    background-color: oklch(0.12 0.01 260) !important;
-    color: oklch(0.75 0.01 260) !important;
+  /* Buttons — secondary / ghost */
+  html[data-darkmode] button,
+  html[data-darkmode] [class*="Button"],
+  html[data-darkmode] [class*="btn"] {
+    background-color: oklch(0.25 0.01 260);
+    color: oklch(0.90 0.01 260);
+    border-color: oklch(0.35 0.01 260);
   }
 
-  /* White background sections — common in marketing pages */
-  html[data-darkmode] .bg-white,
-  html[data-darkmode] [class*="bg-white"],
-  html[data-darkmode] [class*="bg-light"] {
-    background-color: oklch(0.15 0.01 260) !important;
+  html[data-darkmode] button:hover,
+  html[data-darkmode] [class*="Button"]:hover,
+  html[data-darkmode] [class*="btn"]:hover {
+    background-color: oklch(0.30 0.01 260);
   }
 
-  /* Customer/partner logos — preserve visibility */
-  html[data-darkmode] [class*="customer"] img,
-  html[data-darkmode] [class*="partner"] img,
-  html[data-darkmode] [class*="logo"] img {
-    filter: brightness(0.9) !important;
+  /* Timer / active state highlight */
+  html[data-darkmode] [class*="timer-active"],
+  html[data-darkmode] [class*="TimerActive"],
+  html[data-darkmode] [class*="running"],
+  html[data-darkmode] [class*="Running"] {
+    background-color: oklch(0.18 0.06 145);
+    border-color: oklch(0.55 0.18 145);
+  }
+
+  /* Total / summary rows */
+  html[data-darkmode] [class*="total"],
+  html[data-darkmode] [class*="Total"],
+  html[data-darkmode] [class*="summary"],
+  html[data-darkmode] [class*="Summary"],
+  html[data-darkmode] tfoot,
+  html[data-darkmode] tfoot td {
+    background-color: oklch(0.17 0.01 260);
+    color: oklch(0.75 0.01 260);
+    border-top-color: oklch(0.30 0.01 260);
+  }
+
+  /* Modal / dialog */
+  html[data-darkmode] [class*="Modal"],
+  html[data-darkmode] [class*="modal"],
+  html[data-darkmode] [class*="Dialog"],
+  html[data-darkmode] [role="dialog"] {
+    background-color: oklch(0.20 0.01 260);
+    color: oklch(0.93 0.01 260);
+    border-color: oklch(0.30 0.01 260);
+  }
+
+  html[data-darkmode] [class*="ModalOverlay"],
+  html[data-darkmode] [class*="modal-backdrop"],
+  html[data-darkmode] [class*="Backdrop"] {
+    background-color: oklch(0.05 0.01 260 / 0.75);
+  }
+
+  /* Labels / badges */
+  html[data-darkmode] label,
+  html[data-darkmode] [class*="Label"],
+  html[data-darkmode] [class*="label"] {
+    color: oklch(0.70 0.01 260);
+  }
+
+  html[data-darkmode] [class*="Badge"],
+  html[data-darkmode] [class*="badge"],
+  html[data-darkmode] [class*="Tag"],
+  html[data-darkmode] [class*="tag"] {
+    background-color: oklch(0.27 0.02 260);
+    color: oklch(0.85 0.01 260);
+    border-color: oklch(0.35 0.01 260);
+  }
+
+  /* Dividers */
+  html[data-darkmode] hr,
+  html[data-darkmode] [class*="divider"],
+  html[data-darkmode] [class*="Divider"] {
+    border-color: oklch(0.28 0.01 260);
+  }
+
+  /* Tooltip */
+  html[data-darkmode] [class*="Tooltip"],
+  html[data-darkmode] [class*="tooltip"],
+  html[data-darkmode] [role="tooltip"] {
+    background-color: oklch(0.25 0.01 260);
+    color: oklch(0.93 0.01 260);
+    border-color: oklch(0.35 0.01 260);
+  }
+
+  /* Alert / notification banners */
+  html[data-darkmode] [class*="Alert"],
+  html[data-darkmode] [class*="alert"],
+  html[data-darkmode] [class*="Notice"],
+  html[data-darkmode] [class*="Flash"],
+  html[data-darkmode] [role="alert"] {
+    background-color: oklch(0.22 0.03 260);
+    border-color: oklch(0.40 0.05 260);
+    color: oklch(0.90 0.01 260);
+  }
+
+  /* Scrollbar styling */
+  html[data-darkmode] ::-webkit-scrollbar {
+    background-color: oklch(0.15 0.01 260);
+  }
+
+  html[data-darkmode] ::-webkit-scrollbar-thumb {
+    background-color: oklch(0.35 0.01 260);
+    border-radius: 4px;
+  }
+
+  html[data-darkmode] ::-webkit-scrollbar-thumb:hover {
+    background-color: oklch(0.45 0.01 260);
+  }
+
+  /* Preserve images and logos */
+  html[data-darkmode] img,
+  html[data-darkmode] video,
+  html[data-darkmode] canvas,
+  html[data-darkmode] svg[class*="logo"],
+  html[data-darkmode] svg[class*="Logo"] {
+    filter: none;
   }
 }

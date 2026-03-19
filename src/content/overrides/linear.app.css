@@ -1,0 +1,288 @@
+/*
+ * Site override: linear.app (Linear project management)
+ * Addresses broken dark mode on the Linear web application UI.
+ * Ref: https://github.com/serge-ivo/ultimate-dark-mode/issues/13
+ */
+
+@layer darkmode.overrides {
+  /* Base app shell */
+  html[data-darkmode] body,
+  html[data-darkmode] #root,
+  html[data-darkmode] [class*="App_"],
+  html[data-darkmode] [class*="layout_"] {
+    background-color: oklch(0.15 0.01 260);
+    color: oklch(0.93 0.01 260);
+  }
+
+  /* Sidebar / left nav */
+  html[data-darkmode] [class*="sidebar_"],
+  html[data-darkmode] [class*="Sidebar"],
+  html[data-darkmode] [class*="nav_"],
+  html[data-darkmode] nav[class*="sidebar"],
+  html[data-darkmode] [data-testid="sidebar"] {
+    background-color: oklch(0.12 0.01 260);
+    border-right-color: oklch(0.25 0.01 260);
+    color: oklch(0.88 0.01 260);
+  }
+
+  /* Sidebar nav items */
+  html[data-darkmode] [class*="navItem_"],
+  html[data-darkmode] [class*="sidebarItem_"],
+  html[data-darkmode] [class*="NavItem"] {
+    color: oklch(0.80 0.01 260);
+  }
+
+  html[data-darkmode] [class*="navItem_"]:hover,
+  html[data-darkmode] [class*="sidebarItem_"]:hover,
+  html[data-darkmode] [class*="navItem_"][data-active="true"],
+  html[data-darkmode] [class*="sidebarItem_"][aria-selected="true"],
+  html[data-darkmode] [class*="active_"] {
+    background-color: oklch(0.22 0.02 260);
+    color: oklch(0.93 0.01 260);
+  }
+
+  /* Top header / toolbar */
+  html[data-darkmode] [class*="header_"],
+  html[data-darkmode] [class*="Header"],
+  html[data-darkmode] [class*="toolbar_"],
+  html[data-darkmode] [class*="topBar_"] {
+    background-color: oklch(0.18 0.01 260);
+    border-bottom-color: oklch(0.28 0.01 260);
+    color: oklch(0.93 0.01 260);
+  }
+
+  /* Main content area */
+  html[data-darkmode] main,
+  html[data-darkmode] [class*="main_"],
+  html[data-darkmode] [class*="content_"],
+  html[data-darkmode] [class*="mainContent_"],
+  html[data-darkmode] [role="main"] {
+    background-color: oklch(0.15 0.01 260);
+    color: oklch(0.93 0.01 260);
+  }
+
+  /* Issue list / inbox rows */
+  html[data-darkmode] [class*="issueRow_"],
+  html[data-darkmode] [class*="listItem_"],
+  html[data-darkmode] [class*="IssueRow"],
+  html[data-darkmode] [class*="row_"] {
+    background-color: oklch(0.15 0.01 260);
+    border-bottom-color: oklch(0.25 0.01 260);
+    color: oklch(0.93 0.01 260);
+  }
+
+  html[data-darkmode] [class*="issueRow_"]:hover,
+  html[data-darkmode] [class*="listItem_"]:hover,
+  html[data-darkmode] [class*="row_"]:hover {
+    background-color: oklch(0.20 0.01 260);
+  }
+
+  /* Issue detail / view pane */
+  html[data-darkmode] [class*="issueDetail_"],
+  html[data-darkmode] [class*="issueSidebar_"],
+  html[data-darkmode] [class*="viewPane_"],
+  html[data-darkmode] [class*="detailView_"] {
+    background-color: oklch(0.17 0.01 260);
+    border-left-color: oklch(0.28 0.01 260);
+    color: oklch(0.93 0.01 260);
+  }
+
+  /* Cards and panels */
+  html[data-darkmode] [class*="card_"],
+  html[data-darkmode] [class*="Card"],
+  html[data-darkmode] [class*="panel_"],
+  html[data-darkmode] [class*="Panel"],
+  html[data-darkmode] [class*="box_"],
+  html[data-darkmode] [class*="Box"],
+  html[data-darkmode] [class*="container_"],
+  html[data-darkmode] [class*="section_"] {
+    background-color: oklch(0.20 0.01 260);
+    border-color: oklch(0.30 0.01 260);
+    color: oklch(0.93 0.01 260);
+  }
+
+  /* Cycle / project boards — columns */
+  html[data-darkmode] [class*="column_"],
+  html[data-darkmode] [class*="Column"],
+  html[data-darkmode] [class*="boardColumn_"] {
+    background-color: oklch(0.18 0.01 260);
+    border-color: oklch(0.28 0.01 260);
+  }
+
+  /* Section / group headers */
+  html[data-darkmode] [class*="groupHeader_"],
+  html[data-darkmode] [class*="sectionHeader_"],
+  html[data-darkmode] [class*="GroupHeader"] {
+    background-color: oklch(0.17 0.01 260);
+    color: oklch(0.65 0.01 260);
+    border-bottom-color: oklch(0.28 0.01 260);
+  }
+
+  /* Forms and inputs */
+  html[data-darkmode] input,
+  html[data-darkmode] textarea,
+  html[data-darkmode] select,
+  html[data-darkmode] [class*="input_"],
+  html[data-darkmode] [class*="Input"],
+  html[data-darkmode] [class*="textarea_"],
+  html[data-darkmode] [contenteditable="true"] {
+    background-color: oklch(0.22 0.01 260);
+    color: oklch(0.93 0.01 260);
+    border-color: oklch(0.35 0.01 260);
+  }
+
+  html[data-darkmode] input:focus,
+  html[data-darkmode] textarea:focus,
+  html[data-darkmode] select:focus,
+  html[data-darkmode] [contenteditable="true"]:focus {
+    border-color: oklch(0.65 0.15 250);
+    outline-color: oklch(0.65 0.15 250);
+  }
+
+  html[data-darkmode] input::placeholder,
+  html[data-darkmode] textarea::placeholder {
+    color: oklch(0.50 0.01 260);
+  }
+
+  /* Dropdown / context menus / popovers */
+  html[data-darkmode] [class*="dropdown_"],
+  html[data-darkmode] [class*="Dropdown"],
+  html[data-darkmode] [class*="popover_"],
+  html[data-darkmode] [class*="Popover"],
+  html[data-darkmode] [class*="menu_"],
+  html[data-darkmode] [class*="Menu"],
+  html[data-darkmode] [class*="contextMenu_"],
+  html[data-darkmode] [role="menu"],
+  html[data-darkmode] [role="listbox"] {
+    background-color: oklch(0.20 0.01 260);
+    border-color: oklch(0.30 0.01 260);
+    color: oklch(0.93 0.01 260);
+    box-shadow: 0 4px 16px oklch(0.05 0.01 260 / 0.6);
+  }
+
+  html[data-darkmode] [role="option"]:hover,
+  html[data-darkmode] [role="menuitem"]:hover,
+  html[data-darkmode] [class*="menuItem_"]:hover,
+  html[data-darkmode] [class*="MenuItem"]:hover,
+  html[data-darkmode] [class*="option_"]:hover {
+    background-color: oklch(0.27 0.02 260);
+  }
+
+  /* Buttons — primary */
+  html[data-darkmode] [class*="primaryButton_"],
+  html[data-darkmode] button[class*="primary"],
+  html[data-darkmode] [class*="Button--primary"] {
+    background-color: oklch(0.55 0.18 250);
+    color: oklch(0.98 0.01 260);
+    border-color: transparent;
+  }
+
+  /* Buttons — secondary / ghost */
+  html[data-darkmode] button,
+  html[data-darkmode] [class*="button_"],
+  html[data-darkmode] [class*="Button"],
+  html[data-darkmode] [role="button"] {
+    background-color: oklch(0.25 0.01 260);
+    color: oklch(0.90 0.01 260);
+    border-color: oklch(0.35 0.01 260);
+  }
+
+  html[data-darkmode] button:hover,
+  html[data-darkmode] [class*="button_"]:hover,
+  html[data-darkmode] [class*="Button"]:hover {
+    background-color: oklch(0.30 0.01 260);
+  }
+
+  /* Priority / status badges */
+  html[data-darkmode] [class*="badge_"],
+  html[data-darkmode] [class*="Badge"],
+  html[data-darkmode] [class*="tag_"],
+  html[data-darkmode] [class*="Tag"],
+  html[data-darkmode] [class*="label_"],
+  html[data-darkmode] [class*="Label"],
+  html[data-darkmode] [class*="statusLabel_"] {
+    background-color: oklch(0.27 0.02 260);
+    color: oklch(0.85 0.01 260);
+    border-color: oklch(0.35 0.01 260);
+  }
+
+  /* Modal / dialog */
+  html[data-darkmode] [class*="modal_"],
+  html[data-darkmode] [class*="Modal"],
+  html[data-darkmode] [class*="dialog_"],
+  html[data-darkmode] [class*="Dialog"],
+  html[data-darkmode] [role="dialog"] {
+    background-color: oklch(0.20 0.01 260);
+    color: oklch(0.93 0.01 260);
+    border-color: oklch(0.30 0.01 260);
+  }
+
+  html[data-darkmode] [class*="overlay_"],
+  html[data-darkmode] [class*="backdrop_"],
+  html[data-darkmode] [class*="Backdrop"],
+  html[data-darkmode] [class*="Overlay"] {
+    background-color: oklch(0.05 0.01 260 / 0.75);
+  }
+
+  /* Notification / toast banners */
+  html[data-darkmode] [class*="toast_"],
+  html[data-darkmode] [class*="Toast"],
+  html[data-darkmode] [class*="notification_"],
+  html[data-darkmode] [class*="Notification"],
+  html[data-darkmode] [role="alert"] {
+    background-color: oklch(0.22 0.03 260);
+    border-color: oklch(0.40 0.05 260);
+    color: oklch(0.90 0.01 260);
+  }
+
+  /* Dividers / separators */
+  html[data-darkmode] hr,
+  html[data-darkmode] [class*="divider_"],
+  html[data-darkmode] [class*="Divider"],
+  html[data-darkmode] [class*="separator_"] {
+    border-color: oklch(0.28 0.01 260);
+  }
+
+  /* Tooltip */
+  html[data-darkmode] [class*="tooltip_"],
+  html[data-darkmode] [class*="Tooltip"],
+  html[data-darkmode] [role="tooltip"] {
+    background-color: oklch(0.25 0.01 260);
+    color: oklch(0.93 0.01 260);
+    border-color: oklch(0.35 0.01 260);
+  }
+
+  /* Muted / secondary text */
+  html[data-darkmode] [class*="muted_"],
+  html[data-darkmode] [class*="secondary_"],
+  html[data-darkmode] [class*="hint_"],
+  html[data-darkmode] [class*="meta_"],
+  html[data-darkmode] [class*="subtitle_"] {
+    color: oklch(0.65 0.01 260);
+  }
+
+  /* Scrollbar styling */
+  html[data-darkmode] ::-webkit-scrollbar {
+    background-color: oklch(0.15 0.01 260);
+  }
+
+  html[data-darkmode] ::-webkit-scrollbar-thumb {
+    background-color: oklch(0.35 0.01 260);
+    border-radius: 4px;
+  }
+
+  html[data-darkmode] ::-webkit-scrollbar-thumb:hover {
+    background-color: oklch(0.45 0.01 260);
+  }
+
+  /* Preserve images, videos, canvases, and SVGs with photographic content */
+  html[data-darkmode] img,
+  html[data-darkmode] video,
+  html[data-darkmode] canvas,
+  html[data-darkmode] svg[class*="logo"],
+  html[data-darkmode] svg[class*="Logo"],
+  html[data-darkmode] svg[class*="avatar"],
+  html[data-darkmode] svg[class*="Avatar"] {
+    filter: none;
+  }
+}

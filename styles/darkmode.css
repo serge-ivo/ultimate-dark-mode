@@ -1,0 +1,201 @@
+@layer darkmode.base, darkmode.overrides;
+
+@layer darkmode.base {
+  /*
+   * Ultimate Dark Mode — Core Stylesheet
+   *
+   * This is NOT color inversion. We define an explicit dark palette
+   * using oklch for perceptually uniform colors:
+   *
+   *   Base surface:     oklch(0.15 0.01 260) — near-black with cool hint
+   *   Elevated surface: oklch(0.20 0.01 260) — cards, panels
+   *   Input surface:    oklch(0.22 0.01 260) — inputs, textareas
+   *   Border:           oklch(0.30 0.01 260) — subtle dividers
+   *   Muted text:       oklch(0.65 0.01 260) — secondary text
+   *   Body text:        oklch(0.88 0.01 260) — primary text (not pure white)
+   *   Link:             oklch(0.75 0.15 250) — blue, readable on dark
+   */
+
+  /* Force dark color scheme — activates native dark mode on supporting sites */
+  :root[data-darkmode] {
+    color-scheme: dark !important;
+  }
+
+  /* Base surface */
+  html[data-darkmode],
+  html[data-darkmode] body {
+    background-color: oklch(0.15 0.01 260) !important;
+    color: oklch(0.88 0.01 260) !important;
+  }
+
+  /* Structural elements inherit dark background */
+  html[data-darkmode] main,
+  html[data-darkmode] article,
+  html[data-darkmode] section,
+  html[data-darkmode] aside,
+  html[data-darkmode] nav,
+  html[data-darkmode] header,
+  html[data-darkmode] footer,
+  html[data-darkmode] div,
+  html[data-darkmode] form,
+  html[data-darkmode] fieldset,
+  html[data-darkmode] details,
+  html[data-darkmode] dialog,
+  html[data-darkmode] figure,
+  html[data-darkmode] figcaption,
+  html[data-darkmode] blockquote,
+  html[data-darkmode] ul,
+  html[data-darkmode] ol,
+  html[data-darkmode] li,
+  html[data-darkmode] dl,
+  html[data-darkmode] dt,
+  html[data-darkmode] dd,
+  html[data-darkmode] p,
+  html[data-darkmode] span {
+    background-color: transparent !important;
+    color: inherit !important;
+    border-color: oklch(0.30 0.01 260) !important;
+  }
+
+  /* Table elements */
+  html[data-darkmode] table,
+  html[data-darkmode] thead,
+  html[data-darkmode] tbody,
+  html[data-darkmode] tfoot,
+  html[data-darkmode] tr {
+    background-color: transparent !important;
+    color: inherit !important;
+    border-color: oklch(0.30 0.01 260) !important;
+  }
+
+  html[data-darkmode] th {
+    background-color: oklch(0.20 0.01 260) !important;
+    color: inherit !important;
+    border-color: oklch(0.30 0.01 260) !important;
+  }
+
+  html[data-darkmode] td {
+    background-color: transparent !important;
+    color: inherit !important;
+    border-color: oklch(0.30 0.01 260) !important;
+  }
+
+  /* Elevated surfaces — cards, panels, modals, dropdowns */
+  html[data-darkmode] [class*="card"],
+  html[data-darkmode] [class*="Card"],
+  html[data-darkmode] [class*="panel"],
+  html[data-darkmode] [class*="Panel"],
+  html[data-darkmode] [class*="modal"],
+  html[data-darkmode] [class*="Modal"],
+  html[data-darkmode] [class*="dialog"],
+  html[data-darkmode] [class*="Dialog"],
+  html[data-darkmode] [class*="dropdown"],
+  html[data-darkmode] [class*="Dropdown"],
+  html[data-darkmode] [class*="menu"],
+  html[data-darkmode] [class*="Menu"],
+  html[data-darkmode] [class*="popover"],
+  html[data-darkmode] [class*="Popover"],
+  html[data-darkmode] [class*="tooltip"],
+  html[data-darkmode] [class*="Tooltip"],
+  html[data-darkmode] [role="dialog"],
+  html[data-darkmode] [role="menu"],
+  html[data-darkmode] [role="listbox"] {
+    background-color: oklch(0.20 0.01 260) !important;
+    color: oklch(0.88 0.01 260) !important;
+    border-color: oklch(0.30 0.01 260) !important;
+  }
+
+  /* Input elements */
+  html[data-darkmode] input,
+  html[data-darkmode] textarea,
+  html[data-darkmode] select {
+    background-color: oklch(0.22 0.01 260) !important;
+    color: oklch(0.88 0.01 260) !important;
+    border-color: oklch(0.35 0.01 260) !important;
+  }
+
+  html[data-darkmode] input::placeholder,
+  html[data-darkmode] textarea::placeholder {
+    color: oklch(0.50 0.01 260) !important;
+  }
+
+  /* Buttons — slightly elevated, not too bright */
+  html[data-darkmode] button,
+  html[data-darkmode] [role="button"] {
+    background-color: oklch(0.25 0.01 260) !important;
+    color: oklch(0.88 0.01 260) !important;
+    border-color: oklch(0.35 0.01 260) !important;
+  }
+
+  /* Links — distinct blue, readable on dark */
+  html[data-darkmode] a {
+    color: oklch(0.75 0.15 250) !important;
+  }
+
+  html[data-darkmode] a:visited {
+    color: oklch(0.65 0.12 300) !important;
+  }
+
+  /* Headings */
+  html[data-darkmode] h1,
+  html[data-darkmode] h2,
+  html[data-darkmode] h3,
+  html[data-darkmode] h4,
+  html[data-darkmode] h5,
+  html[data-darkmode] h6 {
+    color: oklch(0.93 0.01 260) !important;
+  }
+
+  /* Code blocks */
+  html[data-darkmode] pre,
+  html[data-darkmode] code,
+  html[data-darkmode] kbd,
+  html[data-darkmode] samp {
+    background-color: oklch(0.18 0.01 260) !important;
+    color: oklch(0.82 0.05 150) !important;
+    border-color: oklch(0.30 0.01 260) !important;
+  }
+
+  /* Horizontal rule */
+  html[data-darkmode] hr {
+    border-color: oklch(0.30 0.01 260) !important;
+    background-color: oklch(0.30 0.01 260) !important;
+  }
+
+  /* Preserve media — NEVER alter these */
+  html[data-darkmode] img,
+  html[data-darkmode] video,
+  html[data-darkmode] canvas,
+  html[data-darkmode] picture,
+  html[data-darkmode] iframe,
+  html[data-darkmode] embed,
+  html[data-darkmode] object,
+  html[data-darkmode] [role="img"] {
+    color-scheme: light !important;
+  }
+
+  /* SVG — preserve colors but allow currentColor to inherit */
+  html[data-darkmode] svg {
+    color: inherit;
+  }
+
+  /* Scrollbar */
+  html[data-darkmode] ::-webkit-scrollbar {
+    background-color: oklch(0.15 0.01 260);
+  }
+
+  html[data-darkmode] ::-webkit-scrollbar-thumb {
+    background-color: oklch(0.35 0.01 260);
+    border-radius: 4px;
+  }
+
+  html[data-darkmode] ::-webkit-scrollbar-thumb:hover {
+    background-color: oklch(0.45 0.01 260);
+  }
+
+  /* Selection */
+  html[data-darkmode] ::selection {
+    background-color: oklch(0.40 0.12 250) !important;
+    color: oklch(0.95 0.01 260) !important;
+  }
+}

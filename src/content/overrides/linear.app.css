@@ -1,0 +1,312 @@
+/*
+ * Site override: linear.app (Linear project management)
+ * Addresses broken dark mode on the Linear web application UI.
+ * Ref: https://github.com/serge-ivo/ultimate-dark-mode/issues/13
+ */
+
+@layer darkmode.overrides {
+  /* Base app shell */
+  html[data-darkmode] body,
+  html[data-darkmode] #root,
+  html[data-darkmode] [class*="App_"],
+  html[data-darkmode] [class*="Layout_"] {
+    background-color: oklch(0.15 0.01 260);
+    color: oklch(0.93 0.01 260);
+  }
+
+  /* Sidebar / left nav */
+  html[data-darkmode] [class*="Sidebar_"],
+  html[data-darkmode] [class*="sidebar_"],
+  html[data-darkmode] nav[class*="Nav"],
+  html[data-darkmode] [class*="SideNav_"],
+  html[data-darkmode] [class*="sidenav_"],
+  html[data-darkmode] [class*="LeftNav_"],
+  html[data-darkmode] [class*="leftNav_"] {
+    background-color: oklch(0.12 0.01 260);
+    border-right-color: oklch(0.25 0.01 260);
+    color: oklch(0.88 0.01 260);
+  }
+
+  /* Top header / toolbar */
+  html[data-darkmode] header,
+  html[data-darkmode] [class*="Header_"],
+  html[data-darkmode] [class*="Topbar_"],
+  html[data-darkmode] [class*="Toolbar_"],
+  html[data-darkmode] [class*="NavBar_"],
+  html[data-darkmode] [class*="titleBar_"] {
+    background-color: oklch(0.18 0.01 260);
+    border-bottom-color: oklch(0.28 0.01 260);
+    color: oklch(0.93 0.01 260);
+  }
+
+  /* Nav links */
+  html[data-darkmode] [class*="Sidebar_"] a,
+  html[data-darkmode] [class*="sidebar_"] a,
+  html[data-darkmode] nav a {
+    color: oklch(0.80 0.01 260);
+  }
+
+  html[data-darkmode] [class*="Sidebar_"] a:hover,
+  html[data-darkmode] [class*="sidebar_"] a:hover,
+  html[data-darkmode] nav a:hover,
+  html[data-darkmode] [class*="active_"] a,
+  html[data-darkmode] a[class*="active_"],
+  html[data-darkmode] [class*="selected_"] a,
+  html[data-darkmode] [aria-selected="true"],
+  html[data-darkmode] [aria-current="page"] {
+    color: oklch(0.93 0.01 260);
+    background-color: oklch(0.25 0.02 260);
+  }
+
+  /* Main content area */
+  html[data-darkmode] main,
+  html[data-darkmode] [class*="Content_"],
+  html[data-darkmode] [class*="MainContent_"],
+  html[data-darkmode] [class*="PageContent_"],
+  html[data-darkmode] [role="main"] {
+    background-color: oklch(0.15 0.01 260);
+    color: oklch(0.93 0.01 260);
+  }
+
+  /* Issue list / inbox items */
+  html[data-darkmode] [class*="IssueList_"],
+  html[data-darkmode] [class*="issueList_"],
+  html[data-darkmode] [class*="IssueItem_"],
+  html[data-darkmode] [class*="issueItem_"],
+  html[data-darkmode] [class*="InboxItem_"],
+  html[data-darkmode] [class*="listItem_"] {
+    background-color: oklch(0.15 0.01 260);
+    border-bottom-color: oklch(0.25 0.01 260);
+    color: oklch(0.93 0.01 260);
+  }
+
+  html[data-darkmode] [class*="IssueItem_"]:hover,
+  html[data-darkmode] [class*="issueItem_"]:hover,
+  html[data-darkmode] [class*="listItem_"]:hover {
+    background-color: oklch(0.20 0.01 260);
+  }
+
+  /* Cards, panels, sections */
+  html[data-darkmode] [class*="Card_"],
+  html[data-darkmode] [class*="card_"],
+  html[data-darkmode] [class*="Panel_"],
+  html[data-darkmode] [class*="panel_"],
+  html[data-darkmode] [class*="Section_"],
+  html[data-darkmode] [class*="Box_"],
+  html[data-darkmode] [class*="Container_"],
+  html[data-darkmode] [class*="sheet_"],
+  html[data-darkmode] [class*="Sheet_"] {
+    background-color: oklch(0.20 0.01 260);
+    border-color: oklch(0.30 0.01 260);
+    color: oklch(0.93 0.01 260);
+  }
+
+  /* Detail / issue view pane */
+  html[data-darkmode] [class*="IssueDetail_"],
+  html[data-darkmode] [class*="issueDetail_"],
+  html[data-darkmode] [class*="DetailView_"],
+  html[data-darkmode] [class*="detailView_"],
+  html[data-darkmode] [class*="SplitView_"],
+  html[data-darkmode] [class*="splitView_"] {
+    background-color: oklch(0.17 0.01 260);
+    border-left-color: oklch(0.28 0.01 260);
+    color: oklch(0.93 0.01 260);
+  }
+
+  /* Kanban / board columns */
+  html[data-darkmode] [class*="Column_"],
+  html[data-darkmode] [class*="column_"],
+  html[data-darkmode] [class*="BoardColumn_"],
+  html[data-darkmode] [class*="boardColumn_"] {
+    background-color: oklch(0.18 0.01 260);
+    border-color: oklch(0.28 0.01 260);
+  }
+
+  html[data-darkmode] [class*="BoardCard_"],
+  html[data-darkmode] [class*="boardCard_"],
+  html[data-darkmode] [class*="KanbanCard_"],
+  html[data-darkmode] [class*="kanbanCard_"] {
+    background-color: oklch(0.22 0.01 260);
+    border-color: oklch(0.30 0.01 260);
+    color: oklch(0.93 0.01 260);
+  }
+
+  html[data-darkmode] [class*="BoardCard_"]:hover,
+  html[data-darkmode] [class*="boardCard_"]:hover {
+    background-color: oklch(0.26 0.01 260);
+  }
+
+  /* Priority / status indicators — do not alter icon SVGs */
+  html[data-darkmode] [class*="priorityLabel_"],
+  html[data-darkmode] [class*="statusLabel_"],
+  html[data-darkmode] [class*="Label_"],
+  html[data-darkmode] [class*="label_"] {
+    color: oklch(0.70 0.01 260);
+  }
+
+  /* Forms and inputs */
+  html[data-darkmode] input,
+  html[data-darkmode] textarea,
+  html[data-darkmode] select,
+  html[data-darkmode] [class*="Input_"],
+  html[data-darkmode] [class*="input_"],
+  html[data-darkmode] [class*="Select_"],
+  html[data-darkmode] [class*="Textarea_"],
+  html[data-darkmode] [class*="SearchInput_"],
+  html[data-darkmode] [class*="searchInput_"] {
+    background-color: oklch(0.22 0.01 260);
+    color: oklch(0.93 0.01 260);
+    border-color: oklch(0.35 0.01 260);
+  }
+
+  html[data-darkmode] input:focus,
+  html[data-darkmode] textarea:focus,
+  html[data-darkmode] select:focus {
+    border-color: oklch(0.65 0.15 250);
+    outline-color: oklch(0.65 0.15 250);
+  }
+
+  html[data-darkmode] input::placeholder,
+  html[data-darkmode] textarea::placeholder {
+    color: oklch(0.50 0.01 260);
+  }
+
+  /* Dropdowns / command palette / context menus */
+  html[data-darkmode] [class*="Dropdown_"],
+  html[data-darkmode] [class*="dropdown_"],
+  html[data-darkmode] [class*="Popover_"],
+  html[data-darkmode] [class*="popover_"],
+  html[data-darkmode] [class*="Menu_"],
+  html[data-darkmode] [class*="menu_"],
+  html[data-darkmode] [class*="CommandPalette_"],
+  html[data-darkmode] [class*="commandPalette_"],
+  html[data-darkmode] [class*="ContextMenu_"],
+  html[data-darkmode] [class*="contextMenu_"],
+  html[data-darkmode] [role="listbox"],
+  html[data-darkmode] [role="menu"] {
+    background-color: oklch(0.20 0.01 260);
+    border-color: oklch(0.30 0.01 260);
+    color: oklch(0.93 0.01 260);
+    box-shadow: 0 4px 16px oklch(0.05 0.01 260 / 0.6);
+  }
+
+  html[data-darkmode] [role="option"]:hover,
+  html[data-darkmode] [role="menuitem"]:hover,
+  html[data-darkmode] [class*="MenuItem_"]:hover,
+  html[data-darkmode] [class*="menuItem_"]:hover,
+  html[data-darkmode] [class*="DropdownItem_"]:hover,
+  html[data-darkmode] [class*="dropdownItem_"]:hover {
+    background-color: oklch(0.27 0.02 260);
+  }
+
+  /* Buttons — primary (violet brand) */
+  html[data-darkmode] button[class*="primary"],
+  html[data-darkmode] [class*="btn-primary"],
+  html[data-darkmode] [class*="Button_primary"],
+  html[data-darkmode] [class*="PrimaryButton_"] {
+    background-color: oklch(0.55 0.18 280);
+    color: oklch(0.98 0.01 260);
+    border-color: transparent;
+  }
+
+  /* Buttons — secondary / ghost */
+  html[data-darkmode] button,
+  html[data-darkmode] [class*="Button_"],
+  html[data-darkmode] [class*="button_"],
+  html[data-darkmode] [class*="btn_"] {
+    background-color: oklch(0.25 0.01 260);
+    color: oklch(0.90 0.01 260);
+    border-color: oklch(0.35 0.01 260);
+  }
+
+  html[data-darkmode] button:hover,
+  html[data-darkmode] [class*="Button_"]:hover,
+  html[data-darkmode] [class*="button_"]:hover {
+    background-color: oklch(0.30 0.01 260);
+  }
+
+  /* Modal / dialog */
+  html[data-darkmode] [class*="Modal_"],
+  html[data-darkmode] [class*="modal_"],
+  html[data-darkmode] [class*="Dialog_"],
+  html[data-darkmode] [class*="dialog_"],
+  html[data-darkmode] [role="dialog"] {
+    background-color: oklch(0.20 0.01 260);
+    color: oklch(0.93 0.01 260);
+    border-color: oklch(0.30 0.01 260);
+  }
+
+  html[data-darkmode] [class*="Overlay_"],
+  html[data-darkmode] [class*="overlay_"],
+  html[data-darkmode] [class*="Backdrop_"],
+  html[data-darkmode] [class*="backdrop_"] {
+    background-color: oklch(0.05 0.01 260 / 0.75);
+  }
+
+  /* Badges / tags / labels */
+  html[data-darkmode] [class*="Badge_"],
+  html[data-darkmode] [class*="badge_"],
+  html[data-darkmode] [class*="Tag_"],
+  html[data-darkmode] [class*="tag_"],
+  html[data-darkmode] [class*="Chip_"],
+  html[data-darkmode] [class*="chip_"] {
+    background-color: oklch(0.27 0.02 260);
+    color: oklch(0.85 0.01 260);
+    border-color: oklch(0.35 0.01 260);
+  }
+
+  /* Dividers */
+  html[data-darkmode] hr,
+  html[data-darkmode] [class*="Divider_"],
+  html[data-darkmode] [class*="divider_"],
+  html[data-darkmode] [class*="separator_"],
+  html[data-darkmode] [class*="Separator_"] {
+    border-color: oklch(0.28 0.01 260);
+  }
+
+  /* Tooltip */
+  html[data-darkmode] [class*="Tooltip_"],
+  html[data-darkmode] [class*="tooltip_"],
+  html[data-darkmode] [role="tooltip"] {
+    background-color: oklch(0.25 0.01 260);
+    color: oklch(0.93 0.01 260);
+    border-color: oklch(0.35 0.01 260);
+  }
+
+  /* Notification / alert banners */
+  html[data-darkmode] [class*="Alert_"],
+  html[data-darkmode] [class*="alert_"],
+  html[data-darkmode] [class*="Notice_"],
+  html[data-darkmode] [class*="Toast_"],
+  html[data-darkmode] [class*="toast_"],
+  html[data-darkmode] [role="alert"] {
+    background-color: oklch(0.22 0.03 260);
+    border-color: oklch(0.40 0.05 260);
+    color: oklch(0.90 0.01 260);
+  }
+
+  /* Scrollbar styling */
+  html[data-darkmode] ::-webkit-scrollbar {
+    background-color: oklch(0.15 0.01 260);
+  }
+
+  html[data-darkmode] ::-webkit-scrollbar-thumb {
+    background-color: oklch(0.35 0.01 260);
+    border-radius: 4px;
+  }
+
+  html[data-darkmode] ::-webkit-scrollbar-thumb:hover {
+    background-color: oklch(0.45 0.01 260);
+  }
+
+  /* Preserve images, videos, canvases, and SVG media */
+  html[data-darkmode] img,
+  html[data-darkmode] video,
+  html[data-darkmode] canvas,
+  html[data-darkmode] svg[class*="logo"],
+  html[data-darkmode] svg[class*="Logo"],
+  html[data-darkmode] svg[class*="illustration"],
+  html[data-darkmode] svg[class*="Illustration"] {
+    filter: none;
+  }
+}

@@ -192,22 +192,17 @@
     }
   }
 
+  let processPending = false
+
   function startMutationObserver() {
-    observer = new MutationObserver(mutations => {
-      for (const mutation of mutations) {
-        for (const node of mutation.addedNodes) {
-          if (node.nodeType === Node.ELEMENT_NODE) {
-            processElement(node)
-            // Process children too
-            const children = node.querySelectorAll?.('*')
-            if (children) {
-              for (const child of children) {
-                processElement(child)
-              }
-            }
-          }
-        }
-      }
+    observer = new MutationObserver(() => {
+      // Debounce: batch mutations into a single rAF pass
+      if (processPending) return
+      processPending = true
+      requestAnimationFrame(() => {
+        processPending = false
+        processExistingElements()
+      })
     })
 
     observer.observe(document.body, {
@@ -218,15 +213,23 @@
 
   function processExistingElements() {
     // Process elements with inline background styles
-    document.querySelectorAll('[style]').forEach(el => {
-      processElement(el)
-    })
+    // Skip canvas-heavy apps (Google Sheets, etc.) — they handle their own rendering
+    const els = document.querySelectorAll('[style]')
+    // Cap to avoid freezing complex apps
+    const limit = Math.min(els.length, 200)
+    for (let i = 0; i < limit; i++) {
+      processElement(els[i])
+    }
   }
 
   function processElement(el) {
     if (!document.documentElement.hasAttribute(ATTR)) return
     if (el.hasAttribute('data-darkmode-inline')) return
     if (isMediaElement(el)) return
+
+    // Skip elements inside canvas containers or editor areas
+    // These are managed by the app and modifying their styles causes crashes
+    if (el.closest('canvas, [role="grid"], [role="textbox"], [contenteditable="true"]')) return
 
     const inlineStyle = el.getAttribute('style')
     if (!inlineStyle) return
@@ -237,27 +240,37 @@
 
     if (!hasBg && !hasColor) return
 
-    const computed = window.getComputedStyle(el)
+    // Pause observer while modifying styles to prevent loops
+    if (observer) observer.disconnect()
 
-    if (hasBg) {
-      const bg = computed.backgroundColor
-      if (bg && bg !== 'transparent' && bg !== 'rgba(0, 0, 0, 0)') {
-        if (getColorLightness(bg) > 0.6) {
-          el.dataset.darkmodeOrigBg = el.style.backgroundColor
-          el.dataset.darkmodeInline = ''
-          el.style.backgroundColor = remapColor(bg)
+    try {
+      const computed = window.getComputedStyle(el)
+
+      if (hasBg) {
+        const bg = computed.backgroundColor
+        if (bg && bg !== 'transparent' && bg !== 'rgba(0, 0, 0, 0)') {
+          if (getColorLightness(bg) > 0.6) {
+            el.dataset.darkmodeOrigBg = el.style.backgroundColor
+            el.dataset.darkmodeInline = ''
+            el.style.backgroundColor = remapColor(bg)
+          }
         }
       }
-    }
 
-    if (hasColor) {
-      const color = computed.color
-      if (color) {
-        if (getColorLightness(color) < 0.4) {
-          el.dataset.darkmodeOrigColor = el.style.color
-          el.dataset.darkmodeInline = ''
-          el.style.color = remapTextColor(color)
+      if (hasColor) {
+        const color = computed.color
+        if (color) {
+          if (getColorLightness(color) < 0.4) {
+            el.dataset.darkmodeOrigColor = el.style.color
+            el.dataset.darkmodeInline = ''
+            el.style.color = remapTextColor(color)
+          }
         }
+      }
+    } finally {
+      // Re-attach observer
+      if (observer && document.body) {
+        observer.observe(document.body, { childList: true, subtree: true })
       }
     }
   }

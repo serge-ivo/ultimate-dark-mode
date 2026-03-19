@@ -47,58 +47,29 @@ jobs:
             ISSUE AUTHOR: ${{ github.event.issue.user.login }}
             ISSUE LABELS: ${{ join(github.event.issue.labels.*.name, ', ') }}
 
-            You are working on the Ultimate Dark Mode Chrome extension — an open-source
-            Manifest V3 extension that applies dark mode to all websites.
+            You are working on the Ultimate Dark Mode Chrome extension.
 
-            FIRST: Read CLAUDE.md in the repo root for full project conventions.
+            CRITICAL: Read CLAUDE.md FIRST — it contains all conventions, the color
+            palette, the override rules, and a list of common mistakes that CRASH
+            web apps. Do not generate CSS without reading it.
 
             ## Your Task
 
-            You have been triggered by a GitHub issue. Read the issue details above carefully.
+            You have been triggered by a GitHub issue. Read the issue details above.
 
             If the issue has a "site-override" or "new-site" label:
 
-            1. Extract the site URL/domain from the issue body.
-            2. Look at any attached screenshots to understand the visual problems.
-            3. Look at any debug JSON data (CSS/DOM analysis) in the issue body.
-            4. Generate a site-specific CSS override file at:
+            1. Read CLAUDE.md fully — especially "Writing Site Override CSS" and
+               "Common Mistakes to Avoid".
+            2. Extract the site URL/domain from the issue body.
+            3. Look at any screenshots and debug JSON in the issue body.
+            4. Check existing overrides in `src/content/overrides/` for examples.
+            5. Generate a site-specific CSS override file at:
                  src/content/overrides/{basedomain}.css
-               where {basedomain} is the registrable domain (e.g., "harvestapp.com",
-               "google.com"). Check existing files in that directory for naming examples.
-            5. Commit the override file to a new branch.
-            6. Create a PR linking back to the issue.
-            7. Comment on the issue with a link to the PR.
-
-            ## CSS Override Rules (MUST follow)
-
-            - Wrap all rules in `@layer darkmode.overrides { ... }`
-            - Scope every selector with `html[data-darkmode]` so overrides only
-              apply when dark mode is active.
-            - Use oklch() color values that match the project palette:
-                - Background:  oklch(0.15 0.01 260)  — near-black with slight blue
-                - Surface:     oklch(0.20 0.01 260)  — cards/panels
-                - Border:      oklch(0.30 0.01 260)
-                - Text:        oklch(0.93 0.01 260)  — off-white
-                - Muted text:  oklch(0.65 0.01 260)
-                - Accent:      oklch(0.65 0.15 250)  — blue accent
-            - NEVER use `filter: invert()` or `filter: brightness()` on containers.
-              Always use explicit color remapping with background-color, color, border-color, etc.
-            - Preserve images, videos, canvases, and SVGs — do not alter media elements.
-            - Keep selectors as simple and stable as possible; prefer element/class
-              selectors over deeply nested or nth-child selectors.
-
-            ## Example override file
-
-            ```css
-            @layer darkmode.overrides {
-              html[data-darkmode] body {
-                background-color: oklch(0.15 0.01 260);
-                color: oklch(0.93 0.01 260);
-              }
-
-              html[data-darkmode] .header {
-                background-color: oklch(0.20 0.01 260);
-                border-bottom-color: oklch(0.30 0.01 260);
-              }
-            }
-            ```
+            6. IMPORTANT: For complex apps (Google Sheets, Notion, Slack, Figma),
+               only target the app "chrome" (toolbars, menus, sidebar). NEVER set
+               colors on elements the app's JS manages — this crashes the app.
+               See the "Critical Rules" section in CLAUDE.md.
+            7. Commit the override file to a new branch.
+            8. Create a PR linking back to the issue.
+            9. Comment on the issue with a link to the PR.

@@ -38,26 +38,35 @@ jobs:
         with:
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
           prompt: |
+            REPO: ${{ github.repository }}
+            EVENT: ${{ github.event_name }}
+            ISSUE NUMBER: ${{ github.event.issue.number }}
+            ISSUE TITLE: ${{ github.event.issue.title }}
+            ISSUE BODY: ${{ github.event.issue.body }}
+            ISSUE AUTHOR: ${{ github.event.issue.user.login }}
+            ISSUE LABELS: ${{ join(github.event.issue.labels.*.name, ', ') }}
+
             You are working on the Ultimate Dark Mode Chrome extension — an open-source
             Manifest V3 extension that applies dark mode to all websites.
 
             FIRST: Read CLAUDE.md in the repo root for full project conventions.
 
-            ## Site Override Workflow
+            ## Your Task
 
-            When an issue has the "site-override" or "new-site" label:
+            You have been triggered by a GitHub issue. Read the issue details above carefully.
 
-            1. Read the issue body carefully. Extract:
-               - The site URL / domain that needs fixing
-               - Any attached screenshot(s) showing the current broken appearance
-            2. Analyze the screenshot to understand which elements need dark mode
-               overrides (e.g., backgrounds still white, text unreadable, controls
-               unstyled).
-            3. Generate a site-specific CSS override file at:
+            If the issue has a "site-override" or "new-site" label:
+
+            1. Extract the site URL/domain from the issue body.
+            2. Look at any attached screenshots to understand the visual problems.
+            3. Look at any debug JSON data (CSS/DOM analysis) in the issue body.
+            4. Generate a site-specific CSS override file at:
                  src/content/overrides/{basedomain}.css
-               where {basedomain} is the registrable domain (e.g., "github.com",
-               "stackoverflow.com"). Match the naming of existing files in that directory.
-            4. Create a PR with the override and comment on the issue linking to the PR.
+               where {basedomain} is the registrable domain (e.g., "harvestapp.com",
+               "google.com"). Check existing files in that directory for naming examples.
+            5. Commit the override file to a new branch.
+            6. Create a PR linking back to the issue.
+            7. Comment on the issue with a link to the PR.
 
             ## CSS Override Rules (MUST follow)
 
@@ -76,12 +85,6 @@ jobs:
             - Preserve images, videos, canvases, and SVGs — do not alter media elements.
             - Keep selectors as simple and stable as possible; prefer element/class
               selectors over deeply nested or nth-child selectors.
-
-            ## Feedback Iterations
-
-            When a user comments on an issue (e.g., "still broken", "header is still
-            white"), update the existing override CSS in the open PR branch to address
-            the feedback. Push a new commit — do not force-push or rewrite history.
 
             ## Example override file
 

@@ -1,0 +1,1206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ultimate Dark Mode — Dark mode for every website</title>
+  <meta name="description" content="A Chrome extension that brings dark mode to every website. AI-built, open source. No blind inversion — intelligent color remapping.">
+  <link rel="icon" type="image/png" sizes="48x48" href="../icons/icon-48.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="../icons/icon-16.png">
+  <style>
+    /* ── Reset & Base ─────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg-primary: #0c0c0f;
+      --bg-surface: #141418;
+      --bg-surface-2: #1c1c22;
+      --bg-surface-3: #24242c;
+      --border: #2a2a35;
+      --border-light: #35354a;
+      --text-primary: #e8e8ed;
+      --text-secondary: #9898a8;
+      --text-tertiary: #6a6a7a;
+      --accent: #a78bfa;
+      --accent-dim: #7c5cbf;
+      --accent-glow: rgba(167, 139, 250, 0.15);
+      --green: #34d399;
+      --red: #f87171;
+      --orange: #fb923c;
+      --blue: #60a5fa;
+      --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Inter, Roboto, Helvetica, Arial, sans-serif;
+      --font-mono: 'SF Mono', SFMono-Regular, ui-monospace, Menlo, Consolas, monospace;
+      --max-width: 1080px;
+      --section-gap: 120px;
+    }
+
+    html {
+      scroll-behavior: smooth;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    body {
+      font-family: var(--font-sans);
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      line-height: 1.7;
+      overflow-x: hidden;
+    }
+
+    a { color: var(--accent); text-decoration: none; transition: color 0.2s; }
+    a:hover { color: #c4b5fd; }
+
+    /* ── Layout ────────────────────────────────────────── */
+    .container {
+      max-width: var(--max-width);
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    section {
+      padding: var(--section-gap) 0;
+    }
+
+    /* ── Nav ───────────────────────────────────────────── */
+    nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 100;
+      background: rgba(12, 12, 15, 0.8);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    nav .container {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 64px;
+    }
+
+    .nav-brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 700;
+      font-size: 16px;
+      color: var(--text-primary);
+    }
+
+    .nav-brand .moon {
+      font-size: 20px;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 32px;
+      list-style: none;
+    }
+
+    .nav-links a {
+      color: var(--text-secondary);
+      font-size: 14px;
+      font-weight: 500;
+      transition: color 0.2s;
+    }
+
+    .nav-links a:hover { color: var(--text-primary); }
+
+    .nav-github {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--text-secondary);
+      font-size: 14px;
+      font-weight: 500;
+      padding: 8px 16px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      transition: all 0.2s;
+    }
+
+    .nav-github:hover {
+      color: var(--text-primary);
+      border-color: var(--border-light);
+      background: var(--bg-surface);
+    }
+
+    .mobile-toggle {
+      display: none;
+      background: none;
+      border: none;
+      color: var(--text-secondary);
+      font-size: 24px;
+      cursor: pointer;
+    }
+
+    /* ── Hero ──────────────────────────────────────────── */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding-top: 64px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: -200px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 800px;
+      height: 800px;
+      background: radial-gradient(circle, var(--accent-glow) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 1;
+    }
+
+    .hero-moon {
+      font-size: 72px;
+      margin-bottom: 32px;
+      display: block;
+      animation: float 6s ease-in-out infinite;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-12px); }
+    }
+
+    .hero h1 {
+      font-size: clamp(40px, 7vw, 72px);
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      line-height: 1.1;
+      margin-bottom: 20px;
+      background: linear-gradient(135deg, var(--text-primary) 0%, var(--accent) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero-tagline {
+      font-size: clamp(18px, 2.5vw, 22px);
+      color: var(--text-secondary);
+      max-width: 560px;
+      margin: 0 auto 40px;
+      font-weight: 400;
+    }
+
+    .hero-actions {
+      display: flex;
+      gap: 16px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 14px 28px;
+      border-radius: 10px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      transition: all 0.2s;
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      color: #0c0c0f;
+    }
+
+    .btn-primary:hover {
+      background: #c4b5fd;
+      color: #0c0c0f;
+      transform: translateY(-1px);
+      box-shadow: 0 8px 30px rgba(167, 139, 250, 0.3);
+    }
+
+    .btn-secondary {
+      background: var(--bg-surface-2);
+      color: var(--text-primary);
+      border: 1px solid var(--border);
+    }
+
+    .btn-secondary:hover {
+      background: var(--bg-surface-3);
+      border-color: var(--border-light);
+      transform: translateY(-1px);
+    }
+
+    /* ── Section Headers ──────────────────────────────── */
+    .section-label {
+      font-size: 13px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--accent);
+      margin-bottom: 12px;
+    }
+
+    .section-title {
+      font-size: clamp(28px, 4vw, 42px);
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      line-height: 1.2;
+      margin-bottom: 16px;
+    }
+
+    .section-desc {
+      font-size: 17px;
+      color: var(--text-secondary);
+      max-width: 640px;
+      line-height: 1.7;
+    }
+
+    .section-header {
+      margin-bottom: 56px;
+    }
+
+    /* ── Comparison Table ─────────────────────────────── */
+    .comparison-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+      margin-top: 32px;
+    }
+
+    .comparison-table th {
+      text-align: left;
+      padding: 14px 20px;
+      background: var(--bg-surface-2);
+      color: var(--text-secondary);
+      font-weight: 600;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .comparison-table th:first-child {
+      border-radius: 8px 0 0 0;
+    }
+
+    .comparison-table th:last-child {
+      border-radius: 0 8px 0 0;
+    }
+
+    .comparison-table td {
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--border);
+      vertical-align: top;
+    }
+
+    .comparison-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .comparison-table td:first-child {
+      color: var(--text-primary);
+      font-weight: 500;
+    }
+
+    .comparison-table td:nth-child(2) {
+      color: var(--red);
+    }
+
+    .comparison-table td:nth-child(3) {
+      color: var(--green);
+    }
+
+    .table-wrap {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    /* ── Three Layer Engine ────────────────────────────── */
+    .layers {
+      display: grid;
+      gap: 24px;
+      margin-top: 8px;
+    }
+
+    .layer-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 32px;
+      display: grid;
+      grid-template-columns: 56px 1fr;
+      gap: 24px;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .layer-card:hover {
+      border-color: var(--border-light);
+      box-shadow: 0 4px 24px rgba(0, 0, 0, 0.3);
+    }
+
+    .layer-num {
+      width: 56px;
+      height: 56px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 12px;
+      font-size: 20px;
+      font-weight: 800;
+      background: var(--bg-surface-2);
+      border: 1px solid var(--border);
+      color: var(--accent);
+    }
+
+    .layer-card h3 {
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .layer-card p {
+      color: var(--text-secondary);
+      font-size: 15px;
+      line-height: 1.6;
+    }
+
+    /* ── Feature Grid ─────────────────────────────────── */
+    .feature-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 24px;
+    }
+
+    .feature-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 32px;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .feature-card:hover {
+      border-color: var(--border-light);
+      box-shadow: 0 4px 24px rgba(0, 0, 0, 0.3);
+    }
+
+    .feature-icon {
+      font-size: 28px;
+      margin-bottom: 16px;
+      display: block;
+    }
+
+    .feature-card h3 {
+      font-size: 17px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .feature-card p {
+      color: var(--text-secondary);
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    /* ── Toggle Demo ──────────────────────────────────── */
+    .toggle-demo {
+      display: flex;
+      align-items: center;
+      gap: 48px;
+      flex-wrap: wrap;
+    }
+
+    .toggle-visual {
+      flex: 1;
+      min-width: 280px;
+    }
+
+    .toggle-text {
+      flex: 1;
+      min-width: 280px;
+    }
+
+    .toggle-mockup {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 32px;
+      text-align: center;
+      max-width: 320px;
+    }
+
+    .mockup-domain {
+      font-size: 14px;
+      color: var(--text-tertiary);
+      margin-bottom: 4px;
+    }
+
+    .mockup-site {
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 24px;
+    }
+
+    .toggle-switch {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .toggle-track {
+      width: 52px;
+      height: 28px;
+      background: var(--bg-surface-3);
+      border-radius: 14px;
+      position: relative;
+      transition: background 0.3s;
+      border: 1px solid var(--border);
+    }
+
+    .toggle-track.active {
+      background: var(--accent-dim);
+      border-color: var(--accent);
+    }
+
+    .toggle-knob {
+      width: 22px;
+      height: 22px;
+      background: var(--text-primary);
+      border-radius: 50%;
+      position: absolute;
+      top: 2px;
+      left: 3px;
+      transition: transform 0.3s;
+    }
+
+    .toggle-track.active .toggle-knob {
+      transform: translateX(23px);
+    }
+
+    .toggle-label-text {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      transition: color 0.3s;
+    }
+
+    .toggle-track.active + .toggle-label-text {
+      color: var(--accent);
+    }
+
+    .mockup-status {
+      margin-top: 16px;
+      font-size: 13px;
+      color: var(--text-tertiary);
+      min-height: 20px;
+    }
+
+    .toggle-text h3 {
+      font-size: 20px;
+      font-weight: 700;
+      margin-bottom: 12px;
+    }
+
+    .toggle-text p {
+      color: var(--text-secondary);
+      font-size: 15px;
+      line-height: 1.7;
+      margin-bottom: 12px;
+    }
+
+    /* ── Pipeline ──────────────────────────────────────── */
+    .pipeline {
+      position: relative;
+    }
+
+    .pipeline-step {
+      display: grid;
+      grid-template-columns: 48px 1fr;
+      gap: 20px;
+      padding-bottom: 32px;
+      position: relative;
+    }
+
+    .pipeline-step:last-child { padding-bottom: 0; }
+
+    .pipeline-step::before {
+      content: '';
+      position: absolute;
+      left: 23px;
+      top: 48px;
+      bottom: 0;
+      width: 2px;
+      background: var(--border);
+    }
+
+    .pipeline-step:last-child::before { display: none; }
+
+    .step-num {
+      width: 48px;
+      height: 48px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      background: var(--bg-surface-2);
+      border: 2px solid var(--border);
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--accent);
+      position: relative;
+      z-index: 1;
+    }
+
+    .step-content h3 {
+      font-size: 16px;
+      font-weight: 700;
+      margin-bottom: 6px;
+      padding-top: 10px;
+    }
+
+    .step-content p {
+      color: var(--text-secondary);
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    /* ── Agents Grid ──────────────────────────────────── */
+    .agents-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 20px;
+    }
+
+    .agent-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 28px;
+      text-align: center;
+      transition: border-color 0.2s;
+    }
+
+    .agent-card:hover {
+      border-color: var(--border-light);
+    }
+
+    .agent-icon {
+      font-size: 32px;
+      margin-bottom: 12px;
+      display: block;
+    }
+
+    .agent-card h3 {
+      font-size: 15px;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+
+    .agent-card p {
+      color: var(--text-secondary);
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    /* ── Install Steps ────────────────────────────────── */
+    .install-steps {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 24px;
+      margin-bottom: 40px;
+    }
+
+    .install-step {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 28px;
+    }
+
+    .install-step-num {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--accent);
+      margin-bottom: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .install-step h3 {
+      font-size: 15px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .install-step p {
+      color: var(--text-secondary);
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    .install-step code {
+      background: var(--bg-surface-3);
+      padding: 2px 7px;
+      border-radius: 4px;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      color: var(--accent);
+    }
+
+    /* ── Tech Stack ───────────────────────────────────── */
+    .tech-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+    }
+
+    .tech-item {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 20px;
+    }
+
+    .tech-item h4 {
+      font-size: 14px;
+      font-weight: 700;
+      margin-bottom: 4px;
+      font-family: var(--font-mono);
+      color: var(--accent);
+    }
+
+    .tech-item p {
+      font-size: 13px;
+      color: var(--text-secondary);
+    }
+
+    /* ── Footer ───────────────────────────────────────── */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 40px 0;
+    }
+
+    .footer-inner {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    .footer-brand {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 600;
+      font-size: 14px;
+      color: var(--text-secondary);
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 24px;
+      list-style: none;
+    }
+
+    .footer-links a {
+      color: var(--text-tertiary);
+      font-size: 13px;
+      transition: color 0.2s;
+    }
+
+    .footer-links a:hover { color: var(--text-secondary); }
+
+    /* ── Separator ─────────────────────────────────────── */
+    .divider {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 0;
+    }
+
+    /* ── Responsive ───────────────────────────────────── */
+    @media (max-width: 768px) {
+      :root { --section-gap: 80px; }
+
+      .nav-links { display: none; }
+      .nav-github { display: none; }
+      .mobile-toggle { display: block; }
+
+      nav.open .nav-links {
+        display: flex;
+        flex-direction: column;
+        position: absolute;
+        top: 64px;
+        left: 0;
+        right: 0;
+        background: rgba(12, 12, 15, 0.98);
+        backdrop-filter: blur(20px);
+        padding: 24px;
+        gap: 20px;
+        border-bottom: 1px solid var(--border);
+      }
+
+      nav.open .nav-github {
+        display: inline-flex;
+        position: absolute;
+        top: 64px;
+        right: 24px;
+        margin-top: 24px;
+      }
+
+      .layer-card {
+        grid-template-columns: 1fr;
+        gap: 12px;
+      }
+
+      .layer-num {
+        width: 40px;
+        height: 40px;
+        font-size: 16px;
+      }
+
+      .toggle-demo { flex-direction: column; gap: 32px; }
+
+      .hero-actions {
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .btn { width: 100%; max-width: 280px; justify-content: center; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ── Nav ────────────────────────────────────────── -->
+  <nav>
+    <div class="container">
+      <a href="#" class="nav-brand">
+        <span class="moon" aria-hidden="true">&#127769;</span>
+        Ultimate Dark Mode
+      </a>
+      <ul class="nav-links">
+        <li><a href="#why">Why Not Invert</a></li>
+        <li><a href="#how">How It Works</a></li>
+        <li><a href="#ai">AI Overrides</a></li>
+        <li><a href="#install">Get Started</a></li>
+      </ul>
+      <a href="https://github.com/serge-ivo/ultimate-dark-mode" class="nav-github" target="_blank" rel="noopener">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+        GitHub
+      </a>
+      <button class="mobile-toggle" aria-label="Toggle menu">&#9776;</button>
+    </div>
+  </nav>
+
+  <!-- ── Hero ───────────────────────────────────────── -->
+  <section class="hero" id="hero">
+    <div class="hero-content">
+      <span class="hero-moon" aria-hidden="true">&#127769;</span>
+      <h1>Ultimate Dark Mode</h1>
+      <p class="hero-tagline">Dark mode for every website. AI-built, open source.</p>
+      <div class="hero-actions">
+        <a href="#install" class="btn btn-primary">Get Started</a>
+        <a href="https://github.com/serge-ivo/ultimate-dark-mode" class="btn btn-secondary" target="_blank" rel="noopener">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+          View on GitHub
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Why Not Invert ─────────────────────────────── -->
+  <hr class="divider">
+  <section id="why">
+    <div class="container">
+      <div class="section-header">
+        <div class="section-label">The Problem</div>
+        <h2 class="section-title">Why not just invert colors?</h2>
+        <p class="section-desc">
+          Color inversion is context-blind. Extensions like Dark Reader apply a generic algorithm that often breaks real websites &mdash; inverting already-dark headers back to bright, mangling images, and producing unreadable text. Dark mode is <em>not</em> the inverse of light mode.
+        </p>
+      </div>
+
+      <div class="table-wrap">
+        <table class="comparison-table">
+          <thead>
+            <tr>
+              <th>Scenario</th>
+              <th>Inversion result</th>
+              <th>Our approach</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Site already has dark header</td>
+              <td>Header becomes bright again</td>
+              <td>Detect existing dark elements, leave them alone</td>
+            </tr>
+            <tr>
+              <td>Light content area with data</td>
+              <td>Content darkens but images invert</td>
+              <td>Remap background/text colors, preserve media</td>
+            </tr>
+            <tr>
+              <td>Partial dark mode (e.g.&nbsp;Google Sheets)</td>
+              <td>Some parts flip the wrong way</td>
+              <td>Custom override darkens only the light parts</td>
+            </tr>
+            <tr>
+              <td>Colored buttons &amp; badges</td>
+              <td>Colors shift unpredictably</td>
+              <td>Preserve hue, adjust only lightness via oklch</td>
+            </tr>
+            <tr>
+              <td>Dark text on dark bg (post-inversion)</td>
+              <td>Unreadable</td>
+              <td>Never happens &mdash; we control contrast ratios</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── How It Works ───────────────────────────────── -->
+  <hr class="divider">
+  <section id="how">
+    <div class="container">
+      <div class="section-header">
+        <div class="section-label">Architecture</div>
+        <h2 class="section-title">A three-layer dark mode engine</h2>
+        <p class="section-desc">
+          Instead of one blunt algorithm, Ultimate Dark Mode uses a layered approach &mdash; choosing the lightest-weight technique that works for each site.
+        </p>
+      </div>
+
+      <div class="layers">
+        <div class="layer-card">
+          <div class="layer-num">1</div>
+          <div>
+            <h3>Native Dark Mode Activation</h3>
+            <p>
+              Many sites already ship a <code>prefers-color-scheme: dark</code> stylesheet. Layer 1 detects this and forces it on &mdash; zero runtime cost, pixel-perfect results. Why fight the site when it already has a dark theme?
+            </p>
+          </div>
+        </div>
+
+        <div class="layer-card">
+          <div class="layer-num">2</div>
+          <div>
+            <h3>oklch CSS Color Remapping</h3>
+            <p>
+              For sites without native dark mode, we use modern CSS &mdash; <code>oklch()</code> relative color syntax, <code>color-mix()</code>, and <code>@layer</code> &mdash; to intelligently remap colors. This is <strong>not inversion</strong>: light colors become dark equivalents while preserving hue and contrast relationships.
+            </p>
+          </div>
+        </div>
+
+        <div class="layer-card">
+          <div class="layer-num">3</div>
+          <div>
+            <h3>JS-Assisted Fallback</h3>
+            <p>
+              Complex web apps with dynamic content, Shadow DOM, or inline styles get a lightweight JavaScript assist. <code>MutationObserver</code> handles dynamic content, <code>adoptedStyleSheets</code> reaches into Shadow DOM, and image detection ensures media is never touched.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Per-Domain Toggle ──────────────────────────── -->
+  <hr class="divider">
+  <section id="toggle">
+    <div class="container">
+      <div class="toggle-demo">
+        <div class="toggle-visual">
+          <div class="toggle-mockup">
+            <div class="mockup-domain">Current site</div>
+            <div class="mockup-site">example.com</div>
+            <label class="toggle-switch" id="demoToggle">
+              <div class="toggle-track" id="toggleTrack">
+                <div class="toggle-knob"></div>
+              </div>
+              <span class="toggle-label-text" id="toggleLabel">Dark mode off</span>
+            </label>
+            <div class="mockup-status" id="toggleStatus">Click to enable</div>
+          </div>
+        </div>
+        <div class="toggle-text">
+          <div class="section-label">Per-Domain Control</div>
+          <h3>One click. Per site. Remembered forever.</h3>
+          <p>
+            Dark mode is <strong>off by default</strong>. Click the extension icon to enable it for the current domain. Your choice is saved and auto-applied on every future visit.
+          </p>
+          <p>
+            Don't like how dark mode looks on one particular site? Turn it off there without affecting the rest of the web. No digging through settings. No global on/off compromise.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── AI-Powered Overrides ───────────────────────── -->
+  <hr class="divider">
+  <section id="ai">
+    <div class="container">
+      <div class="section-header">
+        <div class="section-label">AI-Powered</div>
+        <h2 class="section-title">Community-driven override pipeline</h2>
+        <p class="section-desc">
+          When dark mode doesn't look right on a site, users report it. An AI agent takes it from there &mdash; analyzing screenshots, generating CSS, and opening a PR with before/after proof.
+        </p>
+      </div>
+
+      <div class="pipeline">
+        <div class="pipeline-step">
+          <div class="step-num">1</div>
+          <div class="step-content">
+            <h3>User reports a broken site</h3>
+            <p>Opens a GitHub issue with a screenshot of the problem. "Dark mode looks wrong on docs.google.com."</p>
+          </div>
+        </div>
+        <div class="pipeline-step">
+          <div class="step-num">2</div>
+          <div class="step-content">
+            <h3>AI agent analyzes the screenshot</h3>
+            <p>Spins up headless Chrome via Puppeteer. Takes a baseline screenshot, analyzes the DOM structure, existing colors, and dark mode support.</p>
+          </div>
+        </div>
+        <div class="pipeline-step">
+          <div class="step-num">3</div>
+          <div class="step-content">
+            <h3>Generates a site-specific CSS override</h3>
+            <p>Understands which parts are already dark. Only darkens the light parts. Preserves images, media, and brand colors.</p>
+          </div>
+        </div>
+        <div class="pipeline-step">
+          <div class="step-num">4</div>
+          <div class="step-content">
+            <h3>Opens a PR with before/after comparison</h3>
+            <p>The PR includes the CSS override file, before/after screenshots, and automated visual regression test results.</p>
+          </div>
+        </div>
+        <div class="pipeline-step">
+          <div class="step-num">5</div>
+          <div class="step-content">
+            <h3>User verifies, agent iterates</h3>
+            <p>If the result isn't perfect, the user leaves feedback. The agent refines the override and updates the PR until it's right.</p>
+          </div>
+        </div>
+        <div class="pipeline-step">
+          <div class="step-num">6</div>
+          <div class="step-content">
+            <h3>Auto-merge when confirmed</h3>
+            <p>Once CI passes visual regression and accessibility checks, and the user approves, the override auto-merges and ships.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── GitHub Agents ──────────────────────────────── -->
+  <hr class="divider">
+  <section id="agents">
+    <div class="container">
+      <div class="section-header">
+        <div class="section-label">AI-Operated</div>
+        <h2 class="section-title">Run by GitHub agents</h2>
+        <p class="section-desc">
+          This isn't just AI-built &mdash; it's AI-operated. GitHub agents handle the day-to-day work of maintaining the extension.
+        </p>
+      </div>
+
+      <div class="agents-grid">
+        <div class="agent-card">
+          <span class="agent-icon" aria-hidden="true">&#128270;</span>
+          <h3>Issue Triage</h3>
+          <p>New issues are automatically categorized, prioritized, and assigned to the right workflow.</p>
+        </div>
+        <div class="agent-card">
+          <span class="agent-icon" aria-hidden="true">&#127912;</span>
+          <h3>Override Generation</h3>
+          <p>AI analyzes broken sites and generates pixel-perfect CSS overrides from screenshots.</p>
+        </div>
+        <div class="agent-card">
+          <span class="agent-icon" aria-hidden="true">&#128065;</span>
+          <h3>Visual Regression</h3>
+          <p>Every PR is tested against screenshot baselines to catch visual regressions before merge.</p>
+        </div>
+        <div class="agent-card">
+          <span class="agent-icon" aria-hidden="true">&#9989;</span>
+          <h3>Code Review</h3>
+          <p>Automated review ensures overrides follow conventions, don't break other sites, and meet quality standards.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Get Started ────────────────────────────────── -->
+  <hr class="divider">
+  <section id="install">
+    <div class="container">
+      <div class="section-header">
+        <div class="section-label">Get Started</div>
+        <h2 class="section-title">Install in under a minute</h2>
+        <p class="section-desc">
+          Ultimate Dark Mode isn't on the Chrome Web Store yet. Install it as an unpacked extension in developer mode.
+        </p>
+      </div>
+
+      <div class="install-steps">
+        <div class="install-step">
+          <div class="install-step-num">Step 1</div>
+          <h3>Clone the repo</h3>
+          <p>Run <code>git clone</code> from the <a href="https://github.com/serge-ivo/ultimate-dark-mode" target="_blank" rel="noopener">GitHub repository</a> or download the ZIP.</p>
+        </div>
+        <div class="install-step">
+          <div class="install-step-num">Step 2</div>
+          <h3>Open Chrome extensions</h3>
+          <p>Navigate to <code>chrome://extensions/</code> and enable <strong>Developer mode</strong> in the top right.</p>
+        </div>
+        <div class="install-step">
+          <div class="install-step-num">Step 3</div>
+          <h3>Load unpacked</h3>
+          <p>Click <strong>"Load unpacked"</strong> and select the cloned directory.</p>
+        </div>
+        <div class="install-step">
+          <div class="install-step-num">Step 4</div>
+          <h3>Start toggling</h3>
+          <p>Click the extension icon on any site to enable dark mode for that domain. That's it.</p>
+        </div>
+      </div>
+
+      <div class="feature-grid">
+        <div class="feature-card">
+          <span class="feature-icon" aria-hidden="true">&#128030;</span>
+          <h3>Report a broken site</h3>
+          <p>Found a site where dark mode doesn't look right? <a href="https://github.com/serge-ivo/ultimate-dark-mode/issues/new" target="_blank" rel="noopener">Open an issue</a> with a screenshot. Our AI agent will generate a fix.</p>
+        </div>
+        <div class="feature-card">
+          <span class="feature-icon" aria-hidden="true">&#128736;</span>
+          <h3>Contribute</h3>
+          <p>The project is open source under the MIT license. PRs are welcome &mdash; whether you're adding overrides, fixing bugs, or improving the engine.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Tech Stack ─────────────────────────────────── -->
+  <hr class="divider">
+  <section id="tech">
+    <div class="container">
+      <div class="section-header">
+        <div class="section-label">Under the Hood</div>
+        <h2 class="section-title">Modern CSS, zero dependencies</h2>
+        <p class="section-desc">
+          Built on cutting-edge CSS features for perceptually accurate color transformation &mdash; no npm packages in production.
+        </p>
+      </div>
+
+      <div class="tech-grid">
+        <div class="tech-item">
+          <h4>oklch()</h4>
+          <p>Perceptually uniform color space for accurate lightness remapping without hue shifts.</p>
+        </div>
+        <div class="tech-item">
+          <h4>color-mix()</h4>
+          <p>Blend colors toward a dark palette natively in CSS, no JavaScript needed.</p>
+        </div>
+        <div class="tech-item">
+          <h4>CSS @layer</h4>
+          <p>Clean override cascade that works with site styles without abusing <code>!important</code>.</p>
+        </div>
+        <div class="tech-item">
+          <h4>View Transitions</h4>
+          <p>Smooth, animated toggle between light and dark modes with zero layout shift.</p>
+        </div>
+        <div class="tech-item">
+          <h4>Manifest V3</h4>
+          <p>Chrome's modern extension platform with service workers and declarative APIs.</p>
+        </div>
+        <div class="tech-item">
+          <h4>adoptedStyleSheets</h4>
+          <p>Reach into Shadow DOM to apply dark mode to web components and custom elements.</p>
+        </div>
+        <div class="tech-item">
+          <h4>MutationObserver</h4>
+          <p>Watch for dynamically added content and apply dark mode styles instantly.</p>
+        </div>
+        <div class="tech-item">
+          <h4>chrome.storage.sync</h4>
+          <p>Per-domain settings synced across all your Chrome devices automatically.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Footer ─────────────────────────────────────── -->
+  <footer>
+    <div class="container">
+      <div class="footer-inner">
+        <div class="footer-brand">
+          <span aria-hidden="true">&#127769;</span>
+          Ultimate Dark Mode
+        </div>
+        <ul class="footer-links">
+          <li><a href="https://github.com/serge-ivo/ultimate-dark-mode" target="_blank" rel="noopener">GitHub</a></li>
+          <li><a href="https://github.com/serge-ivo/ultimate-dark-mode/issues" target="_blank" rel="noopener">Issues</a></li>
+          <li><a href="https://github.com/serge-ivo/ultimate-dark-mode/blob/main/LICENSE" target="_blank" rel="noopener">MIT License</a></li>
+        </ul>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ── Minimal JS ─────────────────────────────────── -->
+  <script>
+    // Mobile nav toggle
+    const nav = document.querySelector('nav');
+    const mobileToggle = document.querySelector('.mobile-toggle');
+    mobileToggle.addEventListener('click', () => {
+      nav.classList.toggle('open');
+    });
+
+    // Close mobile nav on link click
+    document.querySelectorAll('.nav-links a').forEach(link => {
+      link.addEventListener('click', () => nav.classList.remove('open'));
+    });
+
+    // Demo toggle interaction
+    const track = document.getElementById('toggleTrack');
+    const label = document.getElementById('toggleLabel');
+    const status = document.getElementById('toggleStatus');
+
+    document.getElementById('demoToggle').addEventListener('click', () => {
+      const isActive = track.classList.toggle('active');
+      label.textContent = isActive ? 'Dark mode on' : 'Dark mode off';
+      status.textContent = isActive ? 'Saved for example.com' : 'Click to enable';
+    });
+
+    // Shrink nav on scroll
+    let lastScroll = 0;
+    window.addEventListener('scroll', () => {
+      const scrolled = window.scrollY > 40;
+      nav.style.borderBottomColor = scrolled ? 'var(--border)' : 'transparent';
+    }, { passive: true });
+  </script>
+
+</body>
+</html>

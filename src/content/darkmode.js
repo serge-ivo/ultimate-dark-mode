@@ -10,6 +10,7 @@
   if (!hostname) return
 
   let linkEl = null
+  let overrideLinkEl = null
   let observer = null
 
   // Check stored state immediately
@@ -60,6 +61,9 @@
     // Layer 2: Inject dark mode stylesheet
     injectStylesheet()
 
+    // Layer 2.5: Inject site-specific override if available
+    injectOverride()
+
     // Layer 3: JS-assisted — handle inline styles and dynamic content
     setupObserver()
   }
@@ -73,10 +77,14 @@
     const meta = document.querySelector('meta[name="color-scheme"]')
     if (meta) meta.remove()
 
-    // Remove stylesheet
+    // Remove stylesheets
     if (linkEl) {
       linkEl.remove()
       linkEl = null
+    }
+    if (overrideLinkEl) {
+      overrideLinkEl.remove()
+      overrideLinkEl = null
     }
 
     // Disconnect observer
@@ -107,6 +115,32 @@
     // Insert as early as possible
     const target = document.head || document.documentElement
     target.insertBefore(linkEl, target.firstChild)
+  }
+
+  function injectOverride() {
+    if (overrideLinkEl) return
+
+    // Try to load a site-specific override CSS file
+    const overrideUrl = chrome.runtime.getURL(`src/content/overrides/${hostname}.css`)
+
+    // Check if the override file exists by trying to fetch it
+    fetch(overrideUrl, { method: 'HEAD' })
+      .then(response => {
+        if (response.ok) {
+          overrideLinkEl = document.createElement('link')
+          overrideLinkEl.rel = 'stylesheet'
+          overrideLinkEl.type = 'text/css'
+          overrideLinkEl.href = overrideUrl
+          overrideLinkEl.id = 'ultimate-darkmode-override'
+
+          // Insert after the base stylesheet
+          const target = document.head || document.documentElement
+          target.appendChild(overrideLinkEl)
+        }
+      })
+      .catch(() => {
+        // No override for this site — that's fine
+      })
   }
 
   function setupObserver() {

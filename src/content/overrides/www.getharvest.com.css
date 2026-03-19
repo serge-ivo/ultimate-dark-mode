@@ -1,0 +1,69 @@
+/*
+ * Site override: www.getharvest.com (Harvest time tracking)
+ * Harvest has no native dark mode. This override targets its specific layout.
+ */
+
+@layer darkmode.overrides {
+  /* Header / Navigation */
+  html[data-darkmode] header,
+  html[data-darkmode] .site-header,
+  html[data-darkmode] nav {
+    background-color: oklch(0.18 0.01 260) !important;
+  }
+
+  /* Hero sections — often have custom backgrounds */
+  html[data-darkmode] [class*="hero"],
+  html[data-darkmode] [class*="Hero"],
+  html[data-darkmode] [class*="banner"],
+  html[data-darkmode] [class*="Banner"] {
+    background-color: oklch(0.17 0.01 260) !important;
+  }
+
+  /* Mega menu dropdowns */
+  html[data-darkmode] .megamenu,
+  html[data-darkmode] [class*="megamenu"],
+  html[data-darkmode] [class*="dropdown"] {
+    background-color: oklch(0.20 0.01 260) !important;
+    border-color: oklch(0.30 0.01 260) !important;
+  }
+
+  /* Feature sections and content cards */
+  html[data-darkmode] [class*="feature"],
+  html[data-darkmode] [class*="Feature"],
+  html[data-darkmode] [class*="testimonial"],
+  html[data-darkmode] [class*="Testimonial"] {
+    background-color: oklch(0.18 0.01 260) !important;
+    color: oklch(0.88 0.01 260) !important;
+  }
+
+  /* CTA buttons — preserve brand color but adjust for dark bg */
+  html[data-darkmode] [class*="btn-primary"],
+  html[data-darkmode] [class*="cta"],
+  html[data-darkmode] [class*="CTA"] {
+    background-color: oklch(0.55 0.18 145) !important;
+    color: oklch(0.98 0.01 260) !important;
+    border-color: transparent !important;
+  }
+
+  /* Footer */
+  html[data-darkmode] footer,
+  html[data-darkmode] [class*="footer"],
+  html[data-darkmode] [class*="Footer"] {
+    background-color: oklch(0.12 0.01 260) !important;
+    color: oklch(0.75 0.01 260) !important;
+  }
+
+  /* White background sections — common in marketing pages */
+  html[data-darkmode] .bg-white,
+  html[data-darkmode] [class*="bg-white"],
+  html[data-darkmode] [class*="bg-light"] {
+    background-color: oklch(0.15 0.01 260) !important;
+  }
+
+  /* Customer/partner logos — preserve visibility */
+  html[data-darkmode] [class*="customer"] img,
+  html[data-darkmode] [class*="partner"] img,
+  html[data-darkmode] [class*="logo"] img {
+    filter: brightness(0.9) !important;
+  }
+}

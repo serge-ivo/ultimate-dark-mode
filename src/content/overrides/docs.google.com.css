@@ -1,0 +1,331 @@
+/*
+ * Site override: docs.google.com (Google Docs / Google Sheets)
+ * Handles surrounding UI chrome — toolbar, formula bar, sheet tabs,
+ * sidebars, menus, and dialogs.
+ * Note: the spreadsheet grid itself is rendered on <canvas>; only the
+ * surrounding UI elements can be targeted with CSS.
+ * Ref: https://github.com/serge-ivo/ultimate-dark-mode/issues/4
+ */
+
+@layer darkmode.overrides {
+  /* ── Base shell ──────────────────────────────────────────────────── */
+  html[data-darkmode] body,
+  html[data-darkmode] #docs-chrome,
+  html[data-darkmode] .docs-ui-unprintable {
+    background-color: oklch(0.15 0.01 260);
+    color: oklch(0.93 0.01 260);
+  }
+
+  /* ── Top menu bar ────────────────────────────────────────────────── */
+  html[data-darkmode] #docs-menubar,
+  html[data-darkmode] .docs-menubar,
+  html[data-darkmode] .waffle-app-bar,
+  html[data-darkmode] .punch-header-scroller,
+  html[data-darkmode] .docs-title-container,
+  html[data-darkmode] .docs-ml-header {
+    background-color: oklch(0.20 0.01 260);
+    border-bottom-color: oklch(0.30 0.01 260);
+    color: oklch(0.93 0.01 260);
+  }
+
+  /* Menu items in the menu bar */
+  html[data-darkmode] .menu-button,
+  html[data-darkmode] .docs-icon-img-container,
+  html[data-darkmode] .docs-menubar-item {
+    color: oklch(0.93 0.01 260);
+  }
+
+  html[data-darkmode] .docs-menubar-item:hover,
+  html[data-darkmode] .menu-button:hover {
+    background-color: oklch(0.27 0.01 260);
+  }
+
+  /* ── Toolbar (bold/italic/font controls etc.) ─────────────────────── */
+  html[data-darkmode] #docs-toolbar,
+  html[data-darkmode] .docs-toolbar,
+  html[data-darkmode] .goog-toolbar,
+  html[data-darkmode] .waffle-toolbar,
+  html[data-darkmode] .punch-toolbar-wrapper {
+    background-color: oklch(0.20 0.01 260);
+    border-bottom-color: oklch(0.30 0.01 260);
+    color: oklch(0.93 0.01 260);
+  }
+
+  html[data-darkmode] .goog-toolbar-button,
+  html[data-darkmode] .docs-toolbar-button,
+  html[data-darkmode] .waffle-toolbar-button {
+    color: oklch(0.93 0.01 260);
+    border-color: transparent;
+  }
+
+  html[data-darkmode] .goog-toolbar-button:hover,
+  html[data-darkmode] .docs-toolbar-button:hover,
+  html[data-darkmode] .waffle-toolbar-button:hover {
+    background-color: oklch(0.27 0.01 260);
+    border-color: oklch(0.35 0.01 260);
+  }
+
+  html[data-darkmode] .goog-toolbar-button-selected,
+  html[data-darkmode] .goog-toolbar-button-checked {
+    background-color: oklch(0.30 0.02 260);
+    border-color: oklch(0.40 0.02 260);
+  }
+
+  /* Toolbar separator */
+  html[data-darkmode] .goog-toolbar-separator {
+    border-color: oklch(0.30 0.01 260);
+  }
+
+  /* Font name / size inputs in toolbar */
+  html[data-darkmode] .docs-fonteditor,
+  html[data-darkmode] .docs-fontsize-edit,
+  html[data-darkmode] .goog-toolbar input,
+  html[data-darkmode] .waffle-toolbar input {
+    background-color: oklch(0.22 0.01 260);
+    color: oklch(0.93 0.01 260);
+    border-color: oklch(0.35 0.01 260);
+  }
+
+  /* ── Formula bar (Sheets) ─────────────────────────────────────────── */
+  html[data-darkmode] #waffle-formula-bar-container,
+  html[data-darkmode] .waffle-formula-bar-container,
+  html[data-darkmode] .formula-bar-container {
+    background-color: oklch(0.20 0.01 260);
+    border-bottom-color: oklch(0.30 0.01 260);
+  }
+
+  html[data-darkmode] #waffle-name-box,
+  html[data-darkmode] .waffle-name-box,
+  html[data-darkmode] .docs-name-box {
+    background-color: oklch(0.22 0.01 260);
+    color: oklch(0.93 0.01 260);
+    border-color: oklch(0.35 0.01 260);
+  }
+
+  html[data-darkmode] #waffle-formula-bar-input,
+  html[data-darkmode] .waffle-formula-bar-input,
+  html[data-darkmode] .formula-bar-input {
+    background-color: oklch(0.22 0.01 260);
+    color: oklch(0.93 0.01 260);
+    caret-color: oklch(0.93 0.01 260);
+  }
+
+  /* ── Sheet tabs at bottom (Sheets) ───────────────────────────────── */
+  html[data-darkmode] #docs-sheet-tab-bar,
+  html[data-darkmode] .docs-sheet-tab-bar,
+  html[data-darkmode] #sheet-menu-button-container,
+  html[data-darkmode] .docs-sheet-tab-container {
+    background-color: oklch(0.18 0.01 260);
+    border-top-color: oklch(0.30 0.01 260);
+  }
+
+  html[data-darkmode] .docs-sheet-tab,
+  html[data-darkmode] .docs-tab {
+    background-color: oklch(0.22 0.01 260);
+    color: oklch(0.80 0.01 260);
+    border-color: oklch(0.30 0.01 260);
+  }
+
+  html[data-darkmode] .docs-sheet-tab:hover {
+    background-color: oklch(0.27 0.01 260);
+    color: oklch(0.93 0.01 260);
+  }
+
+  html[data-darkmode] .docs-sheet-tab-selected,
+  html[data-darkmode] .docs-sheet-tab[selected] {
+    background-color: oklch(0.15 0.01 260);
+    color: oklch(0.93 0.01 260);
+    border-top-color: oklch(0.65 0.15 250);
+  }
+
+  /* ── Dropdown / context menus ─────────────────────────────────────── */
+  html[data-darkmode] .goog-menu,
+  html[data-darkmode] .docs-menu,
+  html[data-darkmode] .goog-menupopup,
+  html[data-darkmode] .waffle-contextmenu,
+  html[data-darkmode] [role="menu"] {
+    background-color: oklch(0.20 0.01 260);
+    border-color: oklch(0.30 0.01 260);
+    color: oklch(0.93 0.01 260);
+    box-shadow: 0 4px 16px oklch(0.05 0.01 260 / 0.6);
+  }
+
+  html[data-darkmode] .goog-menuitem,
+  html[data-darkmode] .docs-menuitem,
+  html[data-darkmode] [role="menuitem"] {
+    color: oklch(0.93 0.01 260);
+  }
+
+  html[data-darkmode] .goog-menuitem-highlight,
+  html[data-darkmode] .goog-menuitem:hover,
+  html[data-darkmode] [role="menuitem"]:hover {
+    background-color: oklch(0.27 0.02 260);
+  }
+
+  html[data-darkmode] .goog-menuitem-disabled,
+  html[data-darkmode] .docs-menuitem-disabled {
+    color: oklch(0.45 0.01 260);
+  }
+
+  html[data-darkmode] .goog-menuseparator {
+    border-color: oklch(0.30 0.01 260);
+  }
+
+  /* Submenu arrow */
+  html[data-darkmode] .goog-menuitem-submenu-arrow {
+    color: oklch(0.65 0.01 260);
+  }
+
+  /* ── Sidebar panels (comments, explore, etc.) ─────────────────────── */
+  html[data-darkmode] .docs-sidebar,
+  html[data-darkmode] .punch-sidebar,
+  html[data-darkmode] .kix-commentspanel,
+  html[data-darkmode] .docos-sidebar,
+  html[data-darkmode] .docos-stream-view,
+  html[data-darkmode] [class*="sidebar-container"] {
+    background-color: oklch(0.20 0.01 260);
+    border-left-color: oklch(0.30 0.01 260);
+    color: oklch(0.93 0.01 260);
+  }
+
+  html[data-darkmode] .docos-comment-summary-view,
+  html[data-darkmode] .docos-resolved-thread-view,
+  html[data-darkmode] .docos-author-name {
+    color: oklch(0.80 0.01 260);
+  }
+
+  html[data-darkmode] .docos-comment-view,
+  html[data-darkmode] .kix-comment-view {
+    background-color: oklch(0.22 0.01 260);
+    border-color: oklch(0.30 0.01 260);
+  }
+
+  /* ── Modal / dialog boxes ─────────────────────────────────────────── */
+  html[data-darkmode] .docs-dialog,
+  html[data-darkmode] .goog-dialog,
+  html[data-darkmode] .docs-dialog-content,
+  html[data-darkmode] [role="dialog"] {
+    background-color: oklch(0.20 0.01 260);
+    color: oklch(0.93 0.01 260);
+    border-color: oklch(0.30 0.01 260);
+  }
+
+  html[data-darkmode] .docs-dialog-title,
+  html[data-darkmode] .goog-dialog-title {
+    background-color: oklch(0.20 0.01 260);
+    color: oklch(0.93 0.01 260);
+    border-bottom-color: oklch(0.30 0.01 260);
+  }
+
+  html[data-darkmode] .docs-dialog-footer,
+  html[data-darkmode] .goog-dialog-buttons {
+    background-color: oklch(0.18 0.01 260);
+    border-top-color: oklch(0.30 0.01 260);
+  }
+
+  /* Modal scrim */
+  html[data-darkmode] .docs-dialog-bg,
+  html[data-darkmode] .goog-dialog-bg {
+    background-color: oklch(0.05 0.01 260 / 0.75);
+  }
+
+  /* ── Inputs and form controls ─────────────────────────────────────── */
+  html[data-darkmode] input[type="text"],
+  html[data-darkmode] input[type="search"],
+  html[data-darkmode] input[type="number"],
+  html[data-darkmode] textarea,
+  html[data-darkmode] select {
+    background-color: oklch(0.22 0.01 260);
+    color: oklch(0.93 0.01 260);
+    border-color: oklch(0.35 0.01 260);
+  }
+
+  html[data-darkmode] input:focus,
+  html[data-darkmode] textarea:focus,
+  html[data-darkmode] select:focus {
+    border-color: oklch(0.65 0.15 250);
+    outline-color: oklch(0.65 0.15 250);
+  }
+
+  html[data-darkmode] input::placeholder,
+  html[data-darkmode] textarea::placeholder {
+    color: oklch(0.50 0.01 260);
+  }
+
+  /* ── Buttons ──────────────────────────────────────────────────────── */
+  html[data-darkmode] .goog-button,
+  html[data-darkmode] .docs-button,
+  html[data-darkmode] button {
+    background-color: oklch(0.25 0.01 260);
+    color: oklch(0.90 0.01 260);
+    border-color: oklch(0.35 0.01 260);
+  }
+
+  html[data-darkmode] .goog-button:hover,
+  html[data-darkmode] .docs-button:hover,
+  html[data-darkmode] button:hover {
+    background-color: oklch(0.30 0.01 260);
+  }
+
+  /* Primary/accent buttons */
+  html[data-darkmode] .goog-button-primary,
+  html[data-darkmode] .docs-button-action,
+  html[data-darkmode] button[class*="primary"] {
+    background-color: oklch(0.55 0.15 250);
+    color: oklch(0.98 0.01 260);
+    border-color: transparent;
+  }
+
+  html[data-darkmode] .goog-button-primary:hover,
+  html[data-darkmode] .docs-button-action:hover {
+    background-color: oklch(0.60 0.15 250);
+  }
+
+  /* ── Notification / toast banners ─────────────────────────────────── */
+  html[data-darkmode] .docs-toast-widget,
+  html[data-darkmode] .docs-butterbar,
+  html[data-darkmode] .docs-savingbanner {
+    background-color: oklch(0.22 0.03 260);
+    color: oklch(0.90 0.01 260);
+    border-color: oklch(0.35 0.05 260);
+  }
+
+  /* ── Tooltip ──────────────────────────────────────────────────────── */
+  html[data-darkmode] .docs-tooltip,
+  html[data-darkmode] .goog-tooltip,
+  html[data-darkmode] [role="tooltip"] {
+    background-color: oklch(0.25 0.01 260);
+    color: oklch(0.93 0.01 260);
+    border-color: oklch(0.35 0.01 260);
+  }
+
+  /* ── Find & replace bar ───────────────────────────────────────────── */
+  html[data-darkmode] .docs-find-replace,
+  html[data-darkmode] .kix-find-replace-dialog {
+    background-color: oklch(0.20 0.01 260);
+    border-color: oklch(0.30 0.01 260);
+    color: oklch(0.93 0.01 260);
+  }
+
+  /* ── Scrollbars ───────────────────────────────────────────────────── */
+  html[data-darkmode] ::-webkit-scrollbar {
+    background-color: oklch(0.15 0.01 260);
+  }
+
+  html[data-darkmode] ::-webkit-scrollbar-thumb {
+    background-color: oklch(0.35 0.01 260);
+    border-radius: 4px;
+  }
+
+  html[data-darkmode] ::-webkit-scrollbar-thumb:hover {
+    background-color: oklch(0.45 0.01 260);
+  }
+
+  /* ── Preserve images, videos, canvas, SVGs ────────────────────────── */
+  html[data-darkmode] img,
+  html[data-darkmode] video,
+  html[data-darkmode] canvas,
+  html[data-darkmode] svg:not([class*="goog-"]) {
+    filter: none;
+  }
+}

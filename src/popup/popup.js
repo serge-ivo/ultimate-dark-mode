@@ -67,7 +67,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   reportLink.addEventListener('click', async (e) => {
     e.preventDefault()
-    reportStatus.textContent = 'Capturing...'
+    reportStatus.textContent = 'Capturing site data...'
     reportStatus.className = 'report-status'
 
     let debugJson = ''
@@ -82,7 +82,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       console.warn('Could not capture debug info:', err)
     }
 
-    // 2. Capture screenshot
+    // 2. Capture screenshot and copy to clipboard
     let screenshotCopied = false
     try {
       const dataUrl = await chrome.tabs.captureVisibleTab(null, { format: 'png' })
@@ -96,29 +96,48 @@ document.addEventListener('DOMContentLoaded', async () => {
       console.warn('Could not capture screenshot:', err)
     }
 
-    // 3. Build issue URL with debug info in body
-    const bodyParts = []
+    // 3. Upload debug info as a gist so it doesn't bloat the URL
+    let gistUrl = ''
     if (debugJson) {
-      bodyParts.push('### Site Debug Info\n\n<details>\n<summary>Click to expand CSS/DOM analysis</summary>\n\n```json\n' + debugJson.slice(0, 60000) + '\n```\n\n</details>')
+      try {
+        const resp = await fetch('https://api.github.com/gists', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            description: `Dark mode debug info for ${hostname}`,
+            public: true,
+            files: {
+              [`${hostname}-debug.json`]: { content: debugJson }
+            }
+          })
+        })
+        if (resp.ok) {
+          const gist = await resp.json()
+          gistUrl = gist.html_url
+        }
+      } catch (err) {
+        console.warn('Could not create gist:', err)
+      }
     }
 
-    const issueParams = new URLSearchParams({
-      template: 'dark-mode-broken.yml',
-      url: tab.url || ''
-    })
+    // 4. Build issue body
+    const bodyLines = [
+      `### Site URL\n\n${tab.url}`,
+      `\n### Screenshot\n\n${screenshotCopied ? '*(Screenshot copied to clipboard — paste it here)*' : '*(Please attach a screenshot)*'}`
+    ]
 
-    // GitHub issue forms don't support pre-filling textarea fields via URL,
-    // so we'll create a regular issue with the debug info in the body
-    let issueUrl
-    if (debugJson) {
-      const title = `[Broken] ${hostname}`
-      const body = `### Site URL\n\n${tab.url}\n\n### Screenshot\n\n${screenshotCopied ? '*(Screenshot copied to clipboard — paste it here)*' : '*(Please attach a screenshot)*'}\n\n${bodyParts.join('\n\n')}`
-      issueUrl = `https://github.com/serge-ivo/ultimate-dark-mode/issues/new?title=${encodeURIComponent(title)}&body=${encodeURIComponent(body)}&labels=${encodeURIComponent('site-override,claude')}`
-    } else {
-      issueUrl = `https://github.com/serge-ivo/ultimate-dark-mode/issues/new?${issueParams}`
+    if (gistUrl) {
+      bodyLines.push(`\n### Site Debug Info\n\n[CSS/DOM analysis](${gistUrl})`)
+    } else if (debugJson) {
+      // Fallback: include truncated debug info inline
+      const truncated = debugJson.slice(0, 3000)
+      bodyLines.push(`\n### Site Debug Info\n\n<details>\n<summary>CSS/DOM analysis</summary>\n\n\`\`\`json\n${truncated}\n\`\`\`\n\n</details>`)
     }
 
-    // Update status
+    const title = `[Broken] ${hostname}`
+    const body = bodyLines.join('\n')
+    const issueUrl = `https://github.com/serge-ivo/ultimate-dark-mode/issues/new?title=${encodeURIComponent(title)}&body=${encodeURIComponent(body.slice(0, 6000))}&labels=${encodeURIComponent('site-override,claude')}`
+
     if (screenshotCopied) {
       reportStatus.textContent = 'Screenshot copied — paste in issue'
       reportStatus.className = 'report-status copied'

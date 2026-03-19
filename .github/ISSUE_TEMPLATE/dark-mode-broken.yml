@@ -1,0 +1,49 @@
+name: Dark Mode Broken on Site
+description: Report a site where dark mode is not working correctly.
+title: "[Broken] "
+labels: ["site-override", "claude"]
+body:
+  - type: input
+    id: site-url
+    attributes:
+      label: Site URL
+      description: The full URL of the site where dark mode is broken.
+      placeholder: "https://example.com"
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Description of what's wrong
+      description: Describe the visual issues you see when dark mode is enabled.
+      placeholder: "e.g., Text is invisible, background stays white, images are inverted..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: screenshot-broken
+    attributes:
+      label: Screenshot with dark mode ON
+      description: Upload a screenshot showing the broken appearance with dark mode enabled.
+      placeholder: Drag and drop an image here or paste it.
+    validations:
+      required: true
+
+  - type: textarea
+    id: screenshot-expected
+    attributes:
+      label: Screenshot of how it SHOULD look
+      description: If possible, upload a screenshot showing the expected or correct appearance.
+      placeholder: Drag and drop an image here or paste it.
+    validations:
+      required: false
+
+  - type: input
+    id: browser-version
+    attributes:
+      label: Browser version
+      description: Your browser name and version (e.g., Chrome 120, Firefox 121).
+      placeholder: "Chrome 120"
+    validations:
+      required: false

@@ -1,0 +1,40 @@
+name: New Site Request
+description: Request dark mode support for a new site.
+title: "[New Site] "
+labels: ["new-site", "claude"]
+body:
+  - type: input
+    id: site-url
+    attributes:
+      label: Site URL
+      description: The full URL of the site you want dark mode support for.
+      placeholder: "https://example.com"
+    validations:
+      required: true
+
+  - type: input
+    id: site-name
+    attributes:
+      label: Site name
+      description: The name of the site or service.
+      placeholder: "Example Site"
+    validations:
+      required: true
+
+  - type: textarea
+    id: screenshot-light
+    attributes:
+      label: Screenshot of the site in light mode
+      description: Upload a screenshot of the site in its current light mode appearance.
+      placeholder: Drag and drop an image here or paste it.
+    validations:
+      required: true
+
+  - type: textarea
+    id: notes
+    attributes:
+      label: Notes about the site's structure
+      description: Any details about the site that might help (e.g., uses iframes, heavy use of inline styles, single-page app).
+      placeholder: "e.g., The site uses Shadow DOM components..."
+    validations:
+      required: false

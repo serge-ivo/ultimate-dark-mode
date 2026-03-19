@@ -109,3 +109,26 @@ input:checked + .slider::before {
   color: #666680;
   min-height: 14px;
 }
+
+.report-row {
+  margin-top: 14px;
+  padding-top: 10px;
+  border-top: 1px solid #2a2a3e;
+  text-align: center;
+}
+
+.report-link {
+  font-size: 11px;
+  color: #666680;
+  text-decoration: none;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.report-link:hover {
+  color: #a5b4fc;
+}
+
+.report-link.copied {
+  color: #22c55e;
+}

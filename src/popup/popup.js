@@ -63,4 +63,33 @@ document.addEventListener('DOMContentLoaded', async () => {
     label.textContent = enabled ? 'On' : 'Off'
     label.classList.toggle('active', enabled)
   }
+
+  // Report issue
+  const reportLink = document.getElementById('report-issue')
+  reportLink.addEventListener('click', async (e) => {
+    e.preventDefault()
+
+    const siteUrl = tab.url || ''
+    const issueParams = new URLSearchParams({
+      template: 'dark-mode-broken.yml',
+      url: siteUrl
+    })
+    const issueUrl = `https://github.com/serge-ivo/ultimate-dark-mode/issues/new?${issueParams}`
+
+    try {
+      const dataUrl = await chrome.tabs.captureVisibleTab(null, { format: 'png' })
+      const res = await fetch(dataUrl)
+      const blob = await res.blob()
+      await navigator.clipboard.write([
+        new ClipboardItem({ 'image/png': blob })
+      ])
+      reportLink.textContent = 'Screenshot copied — paste it in the issue'
+      reportLink.classList.add('copied')
+    } catch (err) {
+      // If screenshot or clipboard fails, still open the issue
+      console.warn('Could not capture/copy screenshot:', err)
+    }
+
+    chrome.tabs.create({ url: issueUrl })
+  })
 })

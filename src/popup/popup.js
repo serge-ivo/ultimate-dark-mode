@@ -33,20 +33,17 @@ document.addEventListener('DOMContentLoaded', async () => {
     domains[hostname] = enabled
     await chrome.storage.sync.set({ [STORAGE_KEY]: domains })
 
-    // Send message to content script
     try {
       await chrome.tabs.sendMessage(tab.id, {
         type: 'toggle-darkmode',
         enabled
       })
     } catch (e) {
-      // Content script may not be loaded — reload the tab
       status.textContent = 'Reload page to apply'
     }
 
     updateUI(enabled)
 
-    // Update badge
     await chrome.action.setBadgeText({
       tabId: tab.id,
       text: enabled ? 'ON' : ''
@@ -64,18 +61,29 @@ document.addEventListener('DOMContentLoaded', async () => {
     label.classList.toggle('active', enabled)
   }
 
-  // Report issue
+  // Report issue — captures screenshot + site CSS debug info
   const reportLink = document.getElementById('report-issue')
+  const reportStatus = document.getElementById('report-status')
+
   reportLink.addEventListener('click', async (e) => {
     e.preventDefault()
+    reportStatus.textContent = 'Capturing...'
+    reportStatus.className = 'report-status'
 
-    const siteUrl = tab.url || ''
-    const issueParams = new URLSearchParams({
-      template: 'dark-mode-broken.yml',
-      url: siteUrl
-    })
-    const issueUrl = `https://github.com/serge-ivo/ultimate-dark-mode/issues/new?${issueParams}`
+    let debugJson = ''
 
+    // 1. Capture site debug info (CSS, DOM structure, computed styles)
+    try {
+      const debugInfo = await chrome.tabs.sendMessage(tab.id, {
+        type: 'capture-debug-info'
+      })
+      debugJson = JSON.stringify(debugInfo, null, 2)
+    } catch (err) {
+      console.warn('Could not capture debug info:', err)
+    }
+
+    // 2. Capture screenshot
+    let screenshotCopied = false
     try {
       const dataUrl = await chrome.tabs.captureVisibleTab(null, { format: 'png' })
       const res = await fetch(dataUrl)
@@ -83,11 +91,39 @@ document.addEventListener('DOMContentLoaded', async () => {
       await navigator.clipboard.write([
         new ClipboardItem({ 'image/png': blob })
       ])
-      reportLink.textContent = 'Screenshot copied — paste it in the issue'
-      reportLink.classList.add('copied')
+      screenshotCopied = true
     } catch (err) {
-      // If screenshot or clipboard fails, still open the issue
-      console.warn('Could not capture/copy screenshot:', err)
+      console.warn('Could not capture screenshot:', err)
+    }
+
+    // 3. Build issue URL with debug info in body
+    const bodyParts = []
+    if (debugJson) {
+      bodyParts.push('### Site Debug Info\n\n<details>\n<summary>Click to expand CSS/DOM analysis</summary>\n\n```json\n' + debugJson.slice(0, 60000) + '\n```\n\n</details>')
+    }
+
+    const issueParams = new URLSearchParams({
+      template: 'dark-mode-broken.yml',
+      url: tab.url || ''
+    })
+
+    // GitHub issue forms don't support pre-filling textarea fields via URL,
+    // so we'll create a regular issue with the debug info in the body
+    let issueUrl
+    if (debugJson) {
+      const title = `[Broken] ${hostname}`
+      const body = `### Site URL\n\n${tab.url}\n\n### Screenshot\n\n${screenshotCopied ? '*(Screenshot copied to clipboard — paste it here)*' : '*(Please attach a screenshot)*'}\n\n${bodyParts.join('\n\n')}`
+      issueUrl = `https://github.com/serge-ivo/ultimate-dark-mode/issues/new?title=${encodeURIComponent(title)}&body=${encodeURIComponent(body)}&labels=${encodeURIComponent('site-override,claude')}`
+    } else {
+      issueUrl = `https://github.com/serge-ivo/ultimate-dark-mode/issues/new?${issueParams}`
+    }
+
+    // Update status
+    if (screenshotCopied) {
+      reportStatus.textContent = 'Screenshot copied — paste in issue'
+      reportStatus.className = 'report-status copied'
+    } else {
+      reportStatus.textContent = 'Opening issue...'
     }
 
     chrome.tabs.create({ url: issueUrl })

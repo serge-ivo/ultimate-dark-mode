@@ -39,6 +39,12 @@
         enabled: document.documentElement.hasAttribute(ATTR)
       })
     }
+    if (msg.type === 'capture-debug-info') {
+      const info = globalThis.__captureSiteDebugInfo
+        ? globalThis.__captureSiteDebugInfo()
+        : { error: 'capture.js not loaded' }
+      sendResponse(info)
+    }
     return true
   })
 

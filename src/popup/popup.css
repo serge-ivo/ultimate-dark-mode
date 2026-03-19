@@ -129,6 +129,14 @@ input:checked + .slider::before {
   color: #a5b4fc;
 }
 
-.report-link.copied {
+.report-status {
+  display: block;
+  margin-top: 6px;
+  font-size: 10px;
+  color: #666680;
+  min-height: 14px;
+}
+
+.report-status.copied {
   color: #22c55e;
 }

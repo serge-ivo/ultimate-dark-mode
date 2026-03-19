@@ -23,7 +23,7 @@
   "content_scripts": [
     {
       "matches": ["<all_urls>"],
-      "js": ["src/content/darkmode.js"],
+      "js": ["src/content/capture.js", "src/content/darkmode.js"],
       "run_at": "document_start"
     }
   ],

@@ -5,6 +5,16 @@ document.addEventListener('DOMContentLoaded', async () => {
   const toggle = document.getElementById('toggle')
   const label = document.getElementById('toggle-label')
   const status = document.getElementById('status')
+  const debugLog = document.getElementById('debug-log')
+
+  function log(msg, type = 'info') {
+    debugLog.classList.add('active')
+    const line = document.createElement('div')
+    line.className = `log-line log-${type}`
+    line.textContent = msg
+    debugLog.appendChild(line)
+    debugLog.scrollTop = debugLog.scrollHeight
+  }
 
   // Get active tab
   const [tab] = await chrome.tabs.query({ active: true, currentWindow: true })
@@ -61,30 +71,38 @@ document.addEventListener('DOMContentLoaded', async () => {
     label.classList.toggle('active', enabled)
   }
 
-  // Report issue — captures screenshot + site CSS debug info
+  // Report issue
   const reportLink = document.getElementById('report-issue')
   const reportStatus = document.getElementById('report-status')
 
   reportLink.addEventListener('click', async (e) => {
     e.preventDefault()
-    reportStatus.textContent = 'Capturing site data...'
+    reportStatus.textContent = 'Capturing...'
     reportStatus.className = 'report-status'
 
-    let debugJson = ''
+    log('Starting capture for ' + hostname)
 
-    // 1. Capture site debug info (CSS, DOM structure, computed styles)
+    // 1. Capture debug info
+    let debugJson = ''
     try {
+      log('Requesting debug info from content script...')
       const debugInfo = await chrome.tabs.sendMessage(tab.id, {
         type: 'capture-debug-info'
       })
       debugJson = JSON.stringify(debugInfo, null, 2)
+      const elements = debugInfo.elements?.length || 0
+      const classes = debugInfo.topClasses?.length || 0
+      const props = Object.keys(debugInfo.cssCustomProperties || {}).length
+      const inlines = debugInfo.inlineStyleCount || 0
+      log(`Captured: ${elements} elements, ${classes} classes, ${props} CSS vars, ${inlines} inline styles`, 'ok')
     } catch (err) {
-      console.warn('Could not capture debug info:', err)
+      log('Failed to capture debug info: ' + err.message, 'err')
     }
 
-    // 2. Capture screenshot and copy to clipboard
+    // 2. Screenshot
     let screenshotCopied = false
     try {
+      log('Capturing screenshot...')
       const dataUrl = await chrome.tabs.captureVisibleTab(null, { format: 'png' })
       const res = await fetch(dataUrl)
       const blob = await res.blob()
@@ -92,14 +110,16 @@ document.addEventListener('DOMContentLoaded', async () => {
         new ClipboardItem({ 'image/png': blob })
       ])
       screenshotCopied = true
+      log('Screenshot copied to clipboard (' + Math.round(blob.size / 1024) + ' KB)', 'ok')
     } catch (err) {
-      console.warn('Could not capture screenshot:', err)
+      log('Screenshot failed: ' + err.message, 'err')
     }
 
-    // 3. Upload debug info as a gist so it doesn't bloat the URL
+    // 3. Upload debug info as gist
     let gistUrl = ''
     if (debugJson) {
       try {
+        log('Uploading debug info to gist (' + Math.round(debugJson.length / 1024) + ' KB)...')
         const resp = await fetch('https://api.github.com/gists', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -114,13 +134,18 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (resp.ok) {
           const gist = await resp.json()
           gistUrl = gist.html_url
+          log('Gist created: ' + gistUrl, 'ok')
+        } else {
+          const errText = await resp.text()
+          log('Gist upload failed (' + resp.status + '): ' + errText.slice(0, 100), 'err')
         }
       } catch (err) {
-        console.warn('Could not create gist:', err)
+        log('Gist upload error: ' + err.message, 'err')
       }
     }
 
-    // 4. Build issue body
+    // 4. Build issue
+    log('Building issue URL...')
     const bodyLines = [
       `### Site URL\n\n${tab.url}`,
       `\n### Screenshot\n\n${screenshotCopied ? '*(Screenshot copied to clipboard — paste it here)*' : '*(Please attach a screenshot)*'}`
@@ -129,14 +154,24 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (gistUrl) {
       bodyLines.push(`\n### Site Debug Info\n\n[CSS/DOM analysis](${gistUrl})`)
     } else if (debugJson) {
-      // Fallback: include truncated debug info inline
-      const truncated = debugJson.slice(0, 3000)
-      bodyLines.push(`\n### Site Debug Info\n\n<details>\n<summary>CSS/DOM analysis</summary>\n\n\`\`\`json\n${truncated}\n\`\`\`\n\n</details>`)
+      // Truncated fallback
+      const truncated = debugJson.slice(0, 2000)
+      bodyLines.push(`\n### Site Debug Info\n\n<details>\n<summary>CSS/DOM analysis (truncated)</summary>\n\n\`\`\`json\n${truncated}\n\`\`\`\n\n</details>`)
+      log('Using truncated inline debug info (gist failed)', 'info')
     }
 
     const title = `[Broken] ${hostname}`
     const body = bodyLines.join('\n')
-    const issueUrl = `https://github.com/serge-ivo/ultimate-dark-mode/issues/new?title=${encodeURIComponent(title)}&body=${encodeURIComponent(body.slice(0, 6000))}&labels=${encodeURIComponent('site-override,claude')}`
+
+    // Crop body to fit URL limits
+    const maxBodyLen = 5000
+    const croppedBody = body.length > maxBodyLen
+      ? body.slice(0, maxBodyLen) + '\n\n*(truncated — see gist for full data)*'
+      : body
+
+    const issueUrl = `https://github.com/serge-ivo/ultimate-dark-mode/issues/new?title=${encodeURIComponent(title)}&body=${encodeURIComponent(croppedBody)}&labels=${encodeURIComponent('site-override,claude')}`
+
+    log('Issue URL length: ' + issueUrl.length + ' chars', issueUrl.length > 8000 ? 'err' : 'ok')
 
     if (screenshotCopied) {
       reportStatus.textContent = 'Screenshot copied — paste in issue'
@@ -145,6 +180,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       reportStatus.textContent = 'Opening issue...'
     }
 
+    log('Opening GitHub issue...', 'ok')
     chrome.tabs.create({ url: issueUrl })
   })
 })

@@ -140,3 +140,27 @@ input:checked + .slider::before {
 .report-status.copied {
   color: #22c55e;
 }
+
+.debug-log {
+  margin-top: 8px;
+  max-height: 120px;
+  overflow-y: auto;
+  font-size: 9px;
+  font-family: 'SF Mono', Monaco, Consolas, monospace;
+  color: #555570;
+  line-height: 1.4;
+  display: none;
+}
+
+.debug-log.active {
+  display: block;
+}
+
+.debug-log .log-line {
+  padding: 1px 0;
+  word-break: break-all;
+}
+
+.debug-log .log-ok { color: #22c55e; }
+.debug-log .log-err { color: #f87171; }
+.debug-log .log-info { color: #8888a8; }

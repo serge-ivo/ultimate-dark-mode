@@ -3,4 +3,5 @@ dist/
 *.zip
 *.crx
 *.pem
+screenshots/
 .DS_Store

@@ -5,7 +5,8 @@
   "description": "Dark mode for every website. AI-built, open source.",
   "permissions": [
     "storage",
-    "activeTab"
+    "activeTab",
+    "tabs"
   ],
   "action": {
     "default_popup": "src/popup/popup.html",

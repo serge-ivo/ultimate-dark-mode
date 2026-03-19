@@ -1,7 +1,10 @@
 /*
- * Site override: docs.google.com (Google Docs, Sheets, Slides)
+ * Site override: docs.google.com (Google Docs / Sheets / Slides)
  * Applies dark mode to the app chrome; the document canvas is preserved.
  * Ref: https://github.com/serge-ivo/ultimate-dark-mode/issues/9
+ *
+ * Note: The Sheets cell grid is canvas-rendered — CSS cannot reach
+ * individual cells. This override targets all surrounding UI chrome.
  */
 
 @layer darkmode.overrides {
@@ -186,11 +189,43 @@
     color: oklch(0.93 0.01 260);
   }
 
+  /* ── Comments / suggestion panel ───────────────────────────────── */
+  html[data-darkmode] .docos-anchoreddocoview-bubble,
+  html[data-darkmode] .docos-stream-view,
+  html[data-darkmode] .docos-replyview-body,
+  html[data-darkmode] .docos-docoview-tesla-collapsed {
+    background-color: oklch(0.20 0.01 260);
+    color: oklch(0.93 0.01 260);
+    border-color: oklch(0.30 0.01 260);
+  }
+
+  /* ── Slides filmstrip / thumbnail panel ─────────────────────────── */
+  html[data-darkmode] .punch-filmstrip,
+  html[data-darkmode] .punch-slide-list {
+    background-color: oklch(0.13 0.01 260);
+    border-right-color: oklch(0.28 0.01 260);
+  }
+
+  html[data-darkmode] .punch-slide-thumbnail-container {
+    background-color: oklch(0.20 0.01 260);
+    border-color: oklch(0.30 0.01 260);
+  }
+
+  html[data-darkmode] .punch-slide-thumbnail-container:hover {
+    background-color: oklch(0.25 0.02 260);
+  }
+
+  html[data-darkmode] .punch-slide-thumbnail-container-selected {
+    background-color: oklch(0.27 0.03 260);
+    border-color: oklch(0.65 0.15 250);
+  }
+
   /* ── Dialogs and modals ─────────────────────────────────── */
   html[data-darkmode] .docs-dialog,
   html[data-darkmode] .modal-dialog,
   html[data-darkmode] .goog-dialog,
-  html[data-darkmode] .picker-dialog {
+  html[data-darkmode] .picker-dialog,
+  html[data-darkmode] [role="dialog"] {
     background-color: oklch(0.20 0.01 260);
     color: oklch(0.93 0.01 260);
     border-color: oklch(0.30 0.01 260);
@@ -206,13 +241,20 @@
   }
 
   html[data-darkmode] .docs-dialog-content,
-  html[data-darkmode] .modal-dialog-content {
+  html[data-darkmode] .modal-dialog-content,
+  html[data-darkmode] .goog-dialog-content {
     color: oklch(0.90 0.01 260);
   }
 
+  html[data-darkmode] .docs-dialog-footer-buttons,
+  html[data-darkmode] .goog-dialog-buttons {
+    border-top-color: oklch(0.30 0.01 260);
+  }
+
   html[data-darkmode] .modal-dialog-bg,
-  html[data-darkmode] .docs-dialog-bg {
-    background-color: oklch(0.05 0.01 260 / 0.6);
+  html[data-darkmode] .docs-dialog-bg,
+  html[data-darkmode] .goog-dialog-bg {
+    background-color: oklch(0.05 0.01 260 / 0.7);
   }
 
   /* ── Notification / butter bars ─────────────────────────── */
@@ -240,6 +282,11 @@
   html[data-darkmode] .goog-textinput:focus {
     border-color: oklch(0.65 0.15 250);
     outline-color: oklch(0.65 0.15 250);
+  }
+
+  html[data-darkmode] input::placeholder,
+  html[data-darkmode] textarea::placeholder {
+    color: oklch(0.50 0.01 260);
   }
 
   /* ── Buttons ────────────────────────────────────────────── */
@@ -298,7 +345,9 @@
   html[data-darkmode] .docs-canvas,
   html[data-darkmode] .kix-canvas-tile-content,
   html[data-darkmode] img,
-  html[data-darkmode] video {
+  html[data-darkmode] video,
+  html[data-darkmode] svg.docs-icon,
+  html[data-darkmode] .docs-icon-img {
     filter: none;
   }
 }

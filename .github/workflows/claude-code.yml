@@ -36,8 +36,7 @@ jobs:
       - uses: anthropics/claude-code-action@v1
         with:
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
-          model: claude-sonnet-4-20250514
-          custom_instructions: |
+          prompt: |
             You are working on the Ultimate Dark Mode Chrome extension — an open-source
             Manifest V3 extension that applies dark mode to all websites.
 
